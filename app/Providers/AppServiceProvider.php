@@ -2,11 +2,18 @@
 
 namespace App\Providers;
 
+use App\Events\OrderCompleted;
 use App\Events\OrderCreated;
 use App\Events\OrderPaid;
 use App\Listeners\GenerateETicketOnPayment;
 use App\Listeners\LogAuditTrail;
-use App\Listeners\NotifyAdminOnBankTransfer;
+use App\Listeners\SendOrderCompletedEmail;
+use App\Listeners\SendOrderConfirmationEmail;
+use App\Listeners\SendPaymentConfirmationEmail;
+use App\Models\Order;
+use App\Models\Payment;
+use App\Observers\OrderObserver;
+use App\Observers\PaymentObserver;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
@@ -38,9 +45,21 @@ class AppServiceProvider extends ServiceProvider
      */
     protected function configureEvents(): void
     {
-        Event::listen(OrderPaid::class, GenerateETicketOnPayment::class);
-        Event::listen(OrderCreated::class, NotifyAdminOnBankTransfer::class);
+        // Observers
+        Order::observe(OrderObserver::class);
+        Payment::observe(PaymentObserver::class);
 
+        // Order created
+        Event::listen(OrderCreated::class, SendOrderConfirmationEmail::class);
+
+        // Order paid
+        Event::listen(OrderPaid::class, GenerateETicketOnPayment::class);
+        Event::listen(OrderPaid::class, SendPaymentConfirmationEmail::class);
+
+        // Order completed
+        Event::listen(OrderCompleted::class, SendOrderCompletedEmail::class);
+
+        // Audit logging
         Event::subscribe(LogAuditTrail::class);
     }
 

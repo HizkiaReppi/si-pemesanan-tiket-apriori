@@ -2,6 +2,7 @@
 
 namespace App\Listeners;
 
+use App\Events\OrderCompleted;
 use App\Events\OrderCreated;
 use App\Events\OrderPaid;
 use App\Events\PaymentVerified;
@@ -25,6 +26,7 @@ class LogAuditTrail implements ShouldQueue
         return [
             OrderCreated::class => 'handleOrderCreated',
             OrderPaid::class => 'handleOrderPaid',
+            OrderCompleted::class => 'handleOrderCompleted',
             PaymentVerified::class => 'handlePaymentVerified',
             TicketRedeemed::class => 'handleTicketRedeemed',
         ];
@@ -82,6 +84,19 @@ class LogAuditTrail implements ShouldQueue
                 'status' => $event->checkIn->status->value,
             ],
             userId: $event->checkIn->scanned_by,
+        );
+    }
+
+    public function handleOrderCompleted(OrderCompleted $event): void
+    {
+        AuditLog::log(
+            action: 'order_completed',
+            auditable: $event->order,
+            newValues: [
+                'code' => $event->order->code,
+                'visit_date' => $event->order->visit_date->toDateString(),
+            ],
+            userId: $event->order->user_id,
         );
     }
 }
