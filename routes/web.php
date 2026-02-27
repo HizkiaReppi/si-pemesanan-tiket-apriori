@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\MidtransWebhookController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -8,10 +9,20 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 Route::livewire('/', 'pages::public.home')->name('home');
-Route::livewire('tiket', 'pages::public.ticket-catalog')->name('tiket.index');
-Route::livewire('keranjang', 'pages::public.cart')->name('keranjang');
-Route::livewire('checkout', 'pages::public.checkout')->name('checkout');
+Route::livewire('tiket', 'pages::public.order-wizard')->name('tiket.index');
 Route::livewire('pesanan/{order:code}', 'pages::public.order-detail')->name('pesanan.detail');
+
+// Informational pages
+Route::livewire('tentang', 'pages::public.about')->name('tentang');
+Route::livewire('syarat-ketentuan', 'pages::public.terms')->name('syarat-ketentuan');
+Route::livewire('kebijakan-privasi', 'pages::public.privacy')->name('kebijakan-privasi');
+Route::livewire('kontak', 'pages::public.contact')->name('kontak');
+Route::livewire('faq', 'pages::public.faq')->name('faq');
+
+// Midtrans webhook (no CSRF)
+Route::post('webhook/midtrans', [MidtransWebhookController::class, 'handle'])
+    ->name('webhook.midtrans')
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class]);
 
 /*
 |--------------------------------------------------------------------------
