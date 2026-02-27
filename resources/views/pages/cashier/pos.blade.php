@@ -4,7 +4,6 @@ use App\Actions\CreateOrder;
 use App\Enums\DayType;
 use App\Models\Addon;
 use App\Models\TicketType;
-use App\Services\CartService;
 use App\Services\PricingService;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -102,29 +101,32 @@ new #[Title('Point of Sale')] #[Layout('layouts.app')] class extends Component {
             return;
         }
 
-        // Build cart via CartService
-        $cart = app(CartService::class);
-        $cart->clear();
-        $cart->setVisitDate($this->visitDate);
+        // Build cart array for CreateOrder
+        $cartItems = collect($this->items)
+            ->filter(fn ($item) => $item['quantity'] > 0)
+            ->map(fn ($item) => [
+                'type' => $item['type'],
+                'id' => $item['id'],
+                'name' => $item['name'],
+                'price' => $item['price'],
+                'quantity' => $item['quantity'],
+            ])
+            ->values()
+            ->toArray();
 
-        foreach ($this->items as $item) {
-            if ($item['quantity'] <= 0) {
-                continue;
-            }
-
-            $cart->addItem(
-                type: $item['type'] === 'ticket' ? 'ticket_type' : 'addon',
-                id: $item['id'],
-                quantity: $item['quantity'],
-            );
-        }
+        $cart = [
+            'visit_date' => $this->visitDate,
+            'items' => $cartItems,
+        ];
 
         $action = app(CreateOrder::class);
         $order = $action->execute(
             cart: $cart,
-            customerName: $this->customerName,
-            customerEmail: $this->customerEmail ?: null,
-            customerPhone: $this->customerPhone ?: null,
+            customer: [
+                'name' => $this->customerName,
+                'email' => $this->customerEmail ?: null,
+                'phone' => $this->customerPhone ?: null,
+            ],
             paymentMethod: \App\Enums\PaymentMethod::Cash,
             userId: null,
         );
@@ -137,8 +139,6 @@ new #[Title('Point of Sale')] #[Layout('layouts.app')] class extends Component {
         ]);
 
         event(new \App\Events\OrderPaid($order));
-
-        $cart->clear();
 
         session()->flash('success', "Pesanan {$order->code} berhasil dibuat!");
         $this->redirect(route('kasir.pesanan'), navigate: true);
