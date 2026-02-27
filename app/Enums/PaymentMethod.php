@@ -11,7 +11,7 @@ enum PaymentMethod: string
     public function label(): string
     {
         return match ($this) {
-            self::Midtrans => 'Midtrans (QRIS, VA, e-Wallet)',
+            self::Midtrans => 'Pembayaran Instan (QRIS, VA, e-Wallet)',
             self::BankTransfer => 'Transfer Bank Manual',
             self::Cash => 'Tunai',
         };
