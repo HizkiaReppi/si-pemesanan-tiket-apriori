@@ -74,17 +74,17 @@ class User extends Authenticatable
 
     public function isOwner(): bool
     {
-        return $this->role === UserRole::Owner;
+        return in_array($this->role, [UserRole::Owner, UserRole::Admin]);
     }
 
     public function isCashier(): bool
     {
-        return $this->role === UserRole::Cashier;
+        return in_array($this->role, [UserRole::Cashier, UserRole::Admin]);
     }
 
     public function isGateStaff(): bool
     {
-        return $this->role === UserRole::GateStaff;
+        return in_array($this->role, [UserRole::GateStaff, UserRole::Cashier, UserRole::Admin]);
     }
 
     public function isCustomer(): bool

@@ -13,12 +13,34 @@ class EnsureRole
      *
      * @param  \Closure(Request): Response  $next
      */
+    /**
+     * Role hierarchy: admin > cashier > gate_staff.
+     * Admin can access cashier & owner routes.
+     * Cashier can access gate_staff routes.
+     */
     public function handle(Request $request, Closure $next, string ...$roles): Response
     {
-        if (! $request->user() || ! in_array($request->user()->role->value, $roles)) {
+        if (! $request->user()) {
             abort(403, 'Anda tidak memiliki akses ke halaman ini.');
         }
 
-        return $next($request);
+        $userRole = $request->user()->role->value;
+
+        // Direct role match
+        if (in_array($userRole, $roles)) {
+            return $next($request);
+        }
+
+        // Admin can access owner, cashier, and gate_staff routes
+        if ($userRole === 'admin' && array_intersect($roles, ['owner', 'cashier', 'gate_staff'])) {
+            return $next($request);
+        }
+
+        // Cashier can access gate_staff routes
+        if ($userRole === 'cashier' && in_array('gate_staff', $roles)) {
+            return $next($request);
+        }
+
+        abort(403, 'Anda tidak memiliki akses ke halaman ini.');
     }
 }
