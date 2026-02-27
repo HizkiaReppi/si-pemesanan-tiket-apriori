@@ -216,4 +216,57 @@ new #[Title('Kolam Po\'opo - Wisata Air Panas Alami')] #[Layout('layouts.guest')
             </div>
         </div>
     </section>
+
+    <!-- Location & Map -->
+    <section class="bg-white py-16 dark:bg-zinc-800 sm:py-24">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h2 class="text-3xl font-bold text-zinc-900 dark:text-white sm:text-4xl">
+                    Lokasi Kami
+                </h2>
+                <p class="mx-auto mt-4 max-w-2xl text-zinc-600 dark:text-zinc-400">
+                    Temukan kami di Sulawesi Utara dan dapatkan petunjuk arah langsung ke lokasi.
+                </p>
+            </div>
+
+            <div class="mt-12 grid gap-8 lg:grid-cols-3">
+                <div class="space-y-6 lg:col-span-1">
+                    <div class="rounded-2xl border border-zinc-200 bg-zinc-50 p-6 dark:border-zinc-700 dark:bg-zinc-900">
+                        <div class="mb-3 flex size-12 items-center justify-center rounded-lg bg-sky-100 dark:bg-sky-900/30">
+                            <flux:icon name="map-pin" class="size-6 text-sky-600 dark:text-sky-400" />
+                        </div>
+                        <h3 class="font-semibold text-zinc-900 dark:text-white">Alamat</h3>
+                        <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-400">Kolam Po'opo, Sulawesi Utara, Indonesia</p>
+                    </div>
+                    <div class="rounded-2xl border border-zinc-200 bg-zinc-50 p-6 dark:border-zinc-700 dark:bg-zinc-900">
+                        <div class="mb-3 flex size-12 items-center justify-center rounded-lg bg-green-100 dark:bg-green-900/30">
+                            <flux:icon name="clock" class="size-6 text-green-600 dark:text-green-400" />
+                        </div>
+                        <h3 class="font-semibold text-zinc-900 dark:text-white">Jam Operasional</h3>
+                        <div class="mt-1 space-y-1 text-sm text-zinc-600 dark:text-zinc-400">
+                            <p>Senin - Jumat: 08:00 - 18:00 WITA</p>
+                            <p>Sabtu - Minggu: 07:00 - 19:00 WITA</p>
+                        </div>
+                    </div>
+                    <a href="https://www.google.com/maps/dir/?api=1&destination=Kolam+Po'opo+Sulawesi+Utara" target="_blank" rel="noopener"
+                       class="flex w-full items-center justify-center gap-2 rounded-xl bg-sky-600 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-sky-700">
+                        <flux:icon name="map-pin" variant="mini" class="size-5" />
+                        Petunjuk Arah
+                    </a>
+                </div>
+                <div class="overflow-hidden rounded-2xl border border-zinc-200 dark:border-zinc-700 lg:col-span-2">
+                    <iframe
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.2!2d124.8!3d1.3!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2sKolam+Po'opo!5e0!3m2!1sid!2sid!4v1700000000000!5m2!1sid!2sid"
+                        width="100%"
+                        height="400"
+                        style="border:0;"
+                        allowfullscreen=""
+                        loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade"
+                        class="h-full min-h-[350px] w-full"
+                    ></iframe>
+                </div>
+            </div>
+        </div>
+    </section>
 </div>
