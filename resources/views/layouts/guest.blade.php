@@ -14,6 +14,9 @@
                     </a>
 
                     <nav class="hidden items-center gap-1 md:flex">
+                        <flux:button variant="ghost" :href="route('home')" wire:navigate size="sm">
+                            Beranda
+                        </flux:button>
                         <flux:button variant="ghost" :href="route('tiket.index')" wire:navigate size="sm">
                             Tiket
                         </flux:button>

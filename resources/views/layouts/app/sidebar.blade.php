@@ -11,12 +11,6 @@
             </flux:sidebar.header>
 
             <flux:sidebar.nav>
-                <flux:sidebar.group :heading="__('Utama')" class="grid">
-                    <flux:sidebar.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
-                        Dashboard
-                    </flux:sidebar.item>
-                </flux:sidebar.group>
-
                 {{-- Customer Navigation --}}
                 @if(auth()->user()->isCustomer())
                     <flux:sidebar.group heading="Pembelian" class="grid">
@@ -31,9 +25,9 @@
 
                 {{-- Admin Navigation --}}
                 @if(auth()->user()->isAdmin())
-                    <flux:sidebar.group heading="Transaksi" class="grid">
+                    <flux:sidebar.group heading="Admin" class="grid">
                         <flux:sidebar.item icon="squares-2x2" :href="route('admin.dashboard')" :current="request()->routeIs('admin.dashboard')" wire:navigate>
-                            Dashboard Admin
+                            Dashboard
                         </flux:sidebar.item>
                         <flux:sidebar.item icon="clipboard-document-list" :href="route('admin.pesanan')" :current="request()->routeIs('admin.pesanan*')" wire:navigate>
                             Pesanan
@@ -77,14 +71,16 @@
                 {{-- Cashier Navigation --}}
                 @if(auth()->user()->isCashier())
                     <flux:sidebar.group heading="Kasir" class="grid">
-                        <flux:sidebar.item icon="squares-2x2" :href="route('kasir.dashboard')" :current="request()->routeIs('kasir.dashboard')" wire:navigate>
-                            Dashboard Kasir
-                        </flux:sidebar.item>
+                        @if(auth()->user()->role->value === 'cashier')
+                            <flux:sidebar.item icon="squares-2x2" :href="route('kasir.dashboard')" :current="request()->routeIs('kasir.dashboard')" wire:navigate>
+                                Dashboard
+                            </flux:sidebar.item>
+                        @endif
                         <flux:sidebar.item icon="shopping-cart" :href="route('kasir.penjualan')" :current="request()->routeIs('kasir.penjualan')" wire:navigate>
                             Penjualan
                         </flux:sidebar.item>
                         <flux:sidebar.item icon="clipboard-document-list" :href="route('kasir.pesanan')" :current="request()->routeIs('kasir.pesanan')" wire:navigate>
-                            Pesanan
+                            Pesanan Kasir
                         </flux:sidebar.item>
                     </flux:sidebar.group>
                 @endif
@@ -104,9 +100,11 @@
                 {{-- Owner Navigation --}}
                 @if(auth()->user()->isOwner())
                     <flux:sidebar.group heading="Pemilik" class="grid">
-                        <flux:sidebar.item icon="squares-2x2" :href="route('pemilik.dashboard')" :current="request()->routeIs('pemilik.dashboard')" wire:navigate>
-                            Dashboard
-                        </flux:sidebar.item>
+                        @if(auth()->user()->role->value === 'owner')
+                            <flux:sidebar.item icon="squares-2x2" :href="route('pemilik.dashboard')" :current="request()->routeIs('pemilik.dashboard')" wire:navigate>
+                                Dashboard
+                            </flux:sidebar.item>
+                        @endif
                         <flux:sidebar.item icon="chart-bar" :href="route('pemilik.laporan')" :current="request()->routeIs('pemilik.laporan')" wire:navigate>
                             Laporan
                         </flux:sidebar.item>
@@ -115,9 +113,22 @@
                         </flux:sidebar.item>
                     </flux:sidebar.group>
                 @endif
+
+                {{-- Public Links --}}
+                <flux:sidebar.group heading="Lainnya" class="grid">
+                    <flux:sidebar.item icon="home" :href="route('home')" wire:navigate>
+                        Beranda
+                    </flux:sidebar.item>
+                </flux:sidebar.group>
             </flux:sidebar.nav>
 
             <flux:spacer />
+
+            <flux:sidebar.nav>
+                <flux:sidebar.item icon="cog-6-tooth" :href="route('profile.edit')" :current="request()->routeIs('profile.edit')" wire:navigate>
+                    Pengaturan
+                </flux:sidebar.item>
+            </flux:sidebar.nav>
 
             <x-desktop-user-menu class="hidden lg:block" :name="auth()->user()->name" />
         </flux:sidebar>
@@ -156,7 +167,7 @@
 
                     <flux:menu.radio.group>
                         <flux:menu.item :href="route('profile.edit')" icon="cog" wire:navigate>
-                            {{ __('Settings') }}
+                            Pengaturan
                         </flux:menu.item>
                     </flux:menu.radio.group>
 
@@ -171,7 +182,7 @@
                             class="w-full cursor-pointer"
                             data-test="logout-button"
                         >
-                            {{ __('Log Out') }}
+                            Keluar
                         </flux:menu.item>
                     </form>
                 </flux:menu>

@@ -30,7 +30,17 @@ Route::post('webhook/midtrans', [MidtransWebhookController::class, 'handle'])
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::view('dashboard', 'dashboard')->name('dashboard');
+    Route::get('dashboard', function () {
+        $user = auth()->user();
+
+        return match (true) {
+            $user->isAdmin() => redirect()->route('admin.dashboard'),
+            $user->role->value === 'cashier' => redirect()->route('kasir.dashboard'),
+            $user->role->value === 'owner' => redirect()->route('pemilik.dashboard'),
+            $user->role->value === 'gate_staff' => redirect()->route('gerbang.scanner'),
+            default => redirect()->route('pesanan-saya'),
+        };
+    })->name('dashboard');
 
     // Customer: My Orders
     Route::livewire('pesanan-saya', 'pages::customer.my-orders')->name('pesanan-saya');
