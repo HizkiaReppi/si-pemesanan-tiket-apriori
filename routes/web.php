@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Route;
 Route::livewire('/', 'pages::public.home')->name('home');
 Route::livewire('tiket', 'pages::public.order-wizard')->name('tiket.index');
 Route::livewire('pesanan/{order:code}', 'pages::public.order-detail')->name('pesanan.detail');
+Route::livewire('cek-pesanan', 'pages::public.order-check')->name('cek-pesanan');
 
 // Informational pages
 Route::livewire('tentang', 'pages::public.about')->name('tentang');
@@ -62,6 +63,7 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('ad
     Route::livewire('tiket', 'pages::admin.ticket-types')->name('tiket');
     Route::livewire('addon', 'pages::admin.addons')->name('addon');
     Route::livewire('voucher', 'pages::admin.vouchers')->name('voucher');
+    Route::livewire('galeri', 'pages::admin.gallery')->name('galeri');
     Route::livewire('pengguna', 'pages::admin.users')->name('pengguna');
     Route::livewire('apriori', 'pages::admin.apriori')->name('apriori');
     Route::livewire('laporan', 'pages::admin.reports')->name('laporan');
@@ -77,6 +79,7 @@ Route::middleware(['auth', 'verified', 'role:cashier'])->prefix('kasir')->name('
     Route::livewire('/', 'pages::cashier.dashboard')->name('dashboard');
     Route::livewire('penjualan', 'pages::cashier.pos')->name('penjualan');
     Route::livewire('pesanan', 'pages::cashier.orders')->name('pesanan');
+    Route::livewire('verifikasi', 'pages::cashier.payment-verification')->name('verifikasi');
 });
 
 /*
@@ -98,6 +101,7 @@ Route::middleware(['auth', 'verified', 'role:owner'])->prefix('pemilik')->name('
     Route::livewire('/', 'pages::owner.dashboard')->name('dashboard');
     Route::livewire('laporan', 'pages::owner.reports')->name('laporan');
     Route::livewire('apriori', 'pages::owner.apriori')->name('apriori');
+    Route::livewire('staf', 'pages::owner.staff')->name('staf');
 });
 
 require __DIR__.'/settings.php';
