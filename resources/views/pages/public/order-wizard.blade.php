@@ -4,6 +4,8 @@ use App\Actions\ApplyVoucher;
 use App\Actions\CreateOrder;
 use App\Enums\PaymentMethod;
 use App\Models\Addon;
+use App\Models\Order;
+use App\Models\OrderItem;
 use App\Models\TicketType;
 use App\Services\CartService;
 use App\Services\MidtransService;
@@ -376,15 +378,100 @@ new #[Title('Pesan Tiket - Kolam Po\'opo')] #[Layout('layouts.guest')] class ext
 
         $this->redirect(route('pesanan.detail', $order), navigate: true);
     }
+
+    public function rendering(\Illuminate\View\View $view): void
+    {
+        $paidStatuses = ['paid', 'confirmed', 'completed'];
+
+        $visitorsToday = OrderItem::whereHas('order', fn ($q) => $q->whereIn('status', $paidStatuses)->whereDate('visit_date', today()))
+            ->sum('quantity');
+
+        $visitorsThisMonth = OrderItem::whereHas('order', fn ($q) => $q->whereIn('status', $paidStatuses)->whereMonth('visit_date', now()->month)->whereYear('visit_date', now()->year))
+            ->sum('quantity');
+
+        $totalOrdersThisMonth = Order::whereIn('status', $paidStatuses)
+            ->whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->count();
+
+        $popularTicket = OrderItem::query()
+            ->whereHas('order', fn ($q) => $q->whereIn('status', $paidStatuses))
+            ->where('itemable_type', \App\Models\TicketType::class)
+            ->selectRaw('item_name, SUM(quantity) as total_sold')
+            ->groupBy('item_name')
+            ->orderByDesc('total_sold')
+            ->first();
+
+        $view->with([
+            'visitorsToday' => $visitorsToday,
+            'visitorsThisMonth' => $visitorsThisMonth,
+            'totalOrdersThisMonth' => $totalOrdersThisMonth,
+            'popularTicket' => $popularTicket,
+        ]);
+    }
 }; ?>
 
-<div class="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
+<div class="relative">
+    <!-- Decorative gradient header -->
+    <div class="absolute inset-x-0 top-0 h-72 overflow-hidden bg-linear-to-br from-sky-600 via-sky-700 to-sky-900 dark:from-sky-800 dark:via-sky-900 dark:to-zinc-900">
+        <div class="animate-float-gentle absolute -top-10 left-1/4 size-40 rounded-full bg-white/10 blur-2xl"></div>
+        <div class="animate-float-slow absolute -bottom-10 right-1/4 size-52 rounded-full bg-sky-400/10 blur-2xl"></div>
+        <div class="animate-float-delayed absolute right-16 top-8 size-24 rounded-full bg-sky-300/10 blur-xl"></div>
+        <div class="animate-float-reverse absolute left-1/2 top-1/3 size-32 rounded-full bg-cyan-200/5 blur-2xl"></div>
+        <div class="absolute -bottom-1 left-0 w-full">
+            <svg viewBox="0 0 1440 100" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full">
+                <path d="M0,40 C360,100 1080,0 1440,60 L1440,100 L0,100Z" class="fill-zinc-50 dark:fill-zinc-900" />
+            </svg>
+        </div>
+    </div>
+
+    <div class="relative mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
+    <!-- Background effects for content area -->
+    <div class="bg-dot-pattern pointer-events-none absolute inset-0 opacity-30 dark:opacity-15" style="top: 18rem;"></div>
+    <div class="animate-pulse-soft pointer-events-none absolute right-0 top-96 size-64 rounded-full bg-sky-200/20 blur-3xl dark:bg-sky-500/5"></div>
+    <div class="animate-float-slow pointer-events-none absolute bottom-20 left-0 size-48 rounded-full bg-amber-200/15 blur-3xl dark:bg-amber-500/5"></div>
     <!-- Page Header -->
     <div class="mb-8 text-center">
-        <h1 class="text-3xl font-bold text-zinc-900 dark:text-white sm:text-4xl">Pesan Tiket</h1>
-        <p class="mx-auto mt-3 max-w-2xl text-zinc-600 dark:text-zinc-400">
+        <span class="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-sky-100 backdrop-blur-sm">
+            <flux:icon name="ticket" variant="mini" class="size-4" />
+            Pemesanan Tiket
+        </span>
+        <h1 class="mt-4 text-3xl font-bold text-white sm:text-4xl">Pesan Tiket</h1>
+        <p class="mx-auto mt-3 max-w-2xl text-sky-100">
             Ikuti langkah-langkah berikut untuk memesan tiket Kolam Po'opo
         </p>
+    </div>
+
+    <!-- Statistics -->
+    <div class="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <div class="rounded-xl border border-zinc-200 bg-white/80 p-4 text-center backdrop-blur-sm transition-all duration-300 hover:shadow-md dark:border-zinc-700 dark:bg-zinc-900/80 dark:shadow-zinc-950/20">
+            <div class="mx-auto mb-2 flex size-10 items-center justify-center rounded-lg bg-sky-100 dark:bg-sky-900/30">
+                <flux:icon name="users" variant="mini" class="size-5 text-sky-600 dark:text-sky-400" />
+            </div>
+            <p class="text-xl font-bold text-zinc-900 dark:text-white">{{ number_format($visitorsToday) }}</p>
+            <p class="text-xs text-zinc-500 dark:text-zinc-400">Pengunjung Hari Ini</p>
+        </div>
+        <div class="rounded-xl border border-zinc-200 bg-white/80 p-4 text-center backdrop-blur-sm transition-all duration-300 hover:shadow-md dark:border-zinc-700 dark:bg-zinc-900/80 dark:shadow-zinc-950/20">
+            <div class="mx-auto mb-2 flex size-10 items-center justify-center rounded-lg bg-green-100 dark:bg-green-900/30">
+                <flux:icon name="chart-bar" variant="mini" class="size-5 text-green-600 dark:text-green-400" />
+            </div>
+            <p class="text-xl font-bold text-zinc-900 dark:text-white">{{ number_format($visitorsThisMonth) }}</p>
+            <p class="text-xs text-zinc-500 dark:text-zinc-400">Pengunjung Bulan Ini</p>
+        </div>
+        <div class="rounded-xl border border-zinc-200 bg-white/80 p-4 text-center backdrop-blur-sm transition-all duration-300 hover:shadow-md dark:border-zinc-700 dark:bg-zinc-900/80 dark:shadow-zinc-950/20">
+            <div class="mx-auto mb-2 flex size-10 items-center justify-center rounded-lg bg-amber-100 dark:bg-amber-900/30">
+                <flux:icon name="shopping-bag" variant="mini" class="size-5 text-amber-600 dark:text-amber-400" />
+            </div>
+            <p class="text-xl font-bold text-zinc-900 dark:text-white">{{ number_format($totalOrdersThisMonth) }}</p>
+            <p class="text-xs text-zinc-500 dark:text-zinc-400">Pesanan Bulan Ini</p>
+        </div>
+        <div class="rounded-xl border border-zinc-200 bg-white/80 p-4 text-center backdrop-blur-sm transition-all duration-300 hover:shadow-md dark:border-zinc-700 dark:bg-zinc-900/80 dark:shadow-zinc-950/20">
+            <div class="mx-auto mb-2 flex size-10 items-center justify-center rounded-lg bg-rose-100 dark:bg-rose-900/30">
+                <flux:icon name="fire" variant="mini" class="size-5 text-rose-600 dark:text-rose-400" />
+            </div>
+            <p class="text-sm font-bold text-zinc-900 dark:text-white">{{ $popularTicket?->item_name ?? '-' }}</p>
+            <p class="text-xs text-zinc-500 dark:text-zinc-400">Tiket Terpopuler</p>
+        </div>
     </div>
 
     <!-- Step Indicator -->
@@ -431,7 +518,7 @@ new #[Title('Pesan Tiket - Kolam Po\'opo')] #[Layout('layouts.guest')] class ext
     {{-- ======================== Step 1: Date ======================== --}}
     @if($step === 1)
         <div class="mx-auto max-w-2xl">
-            <div class="rounded-2xl border border-zinc-200 bg-white p-8 dark:border-zinc-700 dark:bg-zinc-900">
+            <div class="rounded-2xl border border-zinc-200 bg-white/90 p-8 backdrop-blur-sm dark:border-zinc-700 dark:bg-zinc-900/90">
                 <div class="mb-6 text-center">
                     <div class="mx-auto mb-4 flex size-16 items-center justify-center rounded-2xl bg-sky-100 dark:bg-sky-900/30">
                         <flux:icon name="calendar-days" class="size-8 text-sky-600 dark:text-sky-400" />
@@ -493,7 +580,7 @@ new #[Title('Pesan Tiket - Kolam Po\'opo')] #[Layout('layouts.guest')] class ext
             @enderror
 
             @if(empty($ticketTypes))
-                <div class="rounded-xl border border-zinc-200 bg-white p-12 text-center dark:border-zinc-700 dark:bg-zinc-900">
+                <div class="rounded-xl border border-zinc-200 bg-white/90 p-12 text-center backdrop-blur-sm dark:border-zinc-700 dark:bg-zinc-900/90">
                     <flux:icon name="ticket" class="mx-auto size-12 text-zinc-300 dark:text-zinc-600" />
                     <p class="mt-4 text-zinc-500 dark:text-zinc-400">Belum ada jenis tiket tersedia.</p>
                 </div>
@@ -501,7 +588,7 @@ new #[Title('Pesan Tiket - Kolam Po\'opo')] #[Layout('layouts.guest')] class ext
                 <div class="space-y-4">
                     @foreach($ticketTypes as $ticket)
                         @php $tKey = "ticket_{$ticket['id']}"; $tQty = $ticketQuantities[$tKey] ?? 0; @endphp
-                        <div class="rounded-2xl border border-zinc-200 bg-white p-6 transition-shadow hover:shadow-md dark:border-zinc-700 dark:bg-zinc-900
+                        <div class="rounded-2xl border border-zinc-200 bg-white/90 p-6 backdrop-blur-sm transition-shadow hover:shadow-md dark:border-zinc-700 dark:bg-zinc-900/90
                             {{ $tQty > 0 ? 'ring-2 ring-sky-500/50' : '' }}">
                             <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                                 <div class="flex-1">
@@ -599,7 +686,7 @@ new #[Title('Pesan Tiket - Kolam Po\'opo')] #[Layout('layouts.guest')] class ext
             </div>
 
             @if(empty($addons))
-                <div class="rounded-xl border border-zinc-200 bg-white p-12 text-center dark:border-zinc-700 dark:bg-zinc-900">
+                <div class="rounded-xl border border-zinc-200 bg-white/90 p-12 text-center backdrop-blur-sm dark:border-zinc-700 dark:bg-zinc-900/90">
                     <flux:icon name="cube" class="mx-auto size-12 text-zinc-300 dark:text-zinc-600" />
                     <p class="mt-4 text-zinc-500 dark:text-zinc-400">Belum ada add-on tersedia.</p>
                 </div>
@@ -607,7 +694,7 @@ new #[Title('Pesan Tiket - Kolam Po\'opo')] #[Layout('layouts.guest')] class ext
                 <div class="grid gap-4 sm:grid-cols-2">
                     @foreach($addons as $addon)
                         @php $aKey = "addon_{$addon['id']}"; $aQty = $addonQuantities[$aKey] ?? 0; @endphp
-                        <div class="rounded-2xl border border-zinc-200 bg-white p-5 transition-shadow hover:shadow-md dark:border-zinc-700 dark:bg-zinc-900
+                        <div class="rounded-2xl border border-zinc-200 bg-white/90 p-5 backdrop-blur-sm transition-shadow hover:shadow-md dark:border-zinc-700 dark:bg-zinc-900/90
                             {{ $aQty > 0 ? 'ring-2 ring-amber-500/50' : '' }}">
                             <div class="mb-3">
                                 <h3 class="font-bold text-zinc-900 dark:text-white">{{ $addon['name'] }}</h3>
@@ -684,7 +771,7 @@ new #[Title('Pesan Tiket - Kolam Po\'opo')] #[Layout('layouts.guest')] class ext
                 <!-- Left: Form -->
                 <div class="space-y-6 lg:col-span-2">
                     <!-- Customer Info -->
-                    <div class="rounded-2xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-900">
+                    <div class="rounded-2xl border border-zinc-200 bg-white/90 p-6 backdrop-blur-sm dark:border-zinc-700 dark:bg-zinc-900/90">
                         <h2 class="mb-4 text-lg font-semibold text-zinc-900 dark:text-white">Informasi Pemesan</h2>
                         <div class="space-y-4">
                             <flux:input wire:model="customerName" label="Nama Lengkap" placeholder="Masukkan nama lengkap" required />
@@ -694,7 +781,7 @@ new #[Title('Pesan Tiket - Kolam Po\'opo')] #[Layout('layouts.guest')] class ext
                     </div>
 
                     <!-- Payment Method -->
-                    <div class="rounded-2xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-900">
+                    <div class="rounded-2xl border border-zinc-200 bg-white/90 p-6 backdrop-blur-sm dark:border-zinc-700 dark:bg-zinc-900/90">
                         <h2 class="mb-4 text-lg font-semibold text-zinc-900 dark:text-white">Metode Pembayaran</h2>
                         <flux:radio.group wire:model="paymentMethod" variant="cards">
                             <flux:radio value="bank_transfer" label="Transfer Bank" description="Upload bukti transfer untuk verifikasi admin" />
@@ -703,7 +790,7 @@ new #[Title('Pesan Tiket - Kolam Po\'opo')] #[Layout('layouts.guest')] class ext
                     </div>
 
                     <!-- Voucher -->
-                    <div class="rounded-2xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-900">
+                    <div class="rounded-2xl border border-zinc-200 bg-white/90 p-6 backdrop-blur-sm dark:border-zinc-700 dark:bg-zinc-900/90">
                         <h2 class="mb-4 text-lg font-semibold text-zinc-900 dark:text-white">Kode Voucher</h2>
                         @if($appliedVoucher)
                             <div class="flex items-center justify-between rounded-lg bg-green-50 p-3 dark:bg-green-900/20">
@@ -727,7 +814,7 @@ new #[Title('Pesan Tiket - Kolam Po\'opo')] #[Layout('layouts.guest')] class ext
 
                 <!-- Right: Order Summary -->
                 <div>
-                    <div class="sticky top-24 rounded-2xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-900">
+                    <div class="sticky top-24 rounded-2xl border border-zinc-200 bg-white/90 p-6 backdrop-blur-sm dark:border-zinc-700 dark:bg-zinc-900/90">
                         <h2 class="mb-4 text-lg font-semibold text-zinc-900 dark:text-white">Ringkasan Pesanan</h2>
 
                         <p class="mb-3 text-sm font-medium text-zinc-600 dark:text-zinc-400">
@@ -775,4 +862,5 @@ new #[Title('Pesan Tiket - Kolam Po\'opo')] #[Layout('layouts.guest')] class ext
             </div>
         </form>
     @endif
+</div>
 </div>
