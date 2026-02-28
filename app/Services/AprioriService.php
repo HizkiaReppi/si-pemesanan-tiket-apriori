@@ -6,10 +6,63 @@ use App\Models\AprioriRun;
 use App\Models\AssociationRule;
 use App\Models\FrequentItemset;
 use App\Models\Order;
+use Carbon\CarbonImmutable;
 use Illuminate\Support\Collection;
 
 class AprioriService
 {
+    /**
+     * Run the full Apriori analysis pipeline: extract transactions, run algorithm, store results.
+     */
+    public function runAnalysis(
+        float $minSupport = 0.1,
+        float $minConfidence = 0.5,
+        ?CarbonImmutable $startDate = null,
+        ?CarbonImmutable $endDate = null,
+        ?int $triggeredBy = null,
+    ): AprioriRun {
+        $dateFrom = ($startDate ?? now()->subYear())->toDateString();
+        $dateTo = ($endDate ?? now())->toDateString();
+
+        $run = AprioriRun::create([
+            'min_support' => $minSupport,
+            'min_confidence' => $minConfidence,
+            'date_from' => $dateFrom,
+            'date_to' => $dateTo,
+            'total_transactions' => 0,
+            'total_items' => 0,
+            'status' => 'running',
+            'started_at' => now(),
+            'triggered_by' => $triggeredBy,
+        ]);
+
+        try {
+            $transactions = $this->extractTransactions($dateFrom, $dateTo);
+            $results = $this->run($transactions, $minSupport, $minConfidence);
+
+            $this->storeResults($run, $results);
+
+            $run->update([
+                'total_transactions' => count($transactions),
+                'total_items' => count($results['frequent_itemsets']),
+                'total_frequent_itemsets' => count($results['frequent_itemsets']),
+                'total_rules' => count($results['rules']),
+                'status' => 'completed',
+                'completed_at' => now(),
+            ]);
+        } catch (\Throwable $e) {
+            $run->update([
+                'status' => 'failed',
+                'error_message' => $e->getMessage(),
+                'completed_at' => now(),
+            ]);
+
+            throw $e;
+        }
+
+        return $run->fresh();
+    }
+
     /**
      * Extract transactions from completed orders within a date range.
      *

@@ -61,4 +61,47 @@ class QrCodeService
 
         return $writer->writeString($token);
     }
+
+    /**
+     * Generate QR code as PNG file and return the file path.
+     */
+    public function generatePng(string $token, int $size = 300): string
+    {
+        $tempPngPath = sys_get_temp_dir().'/qr_'.md5($token).'.png';
+
+        // Use BaconQrCode's Encoder to get the raw QR matrix
+        $qrCode = \BaconQrCode\Encoder\Encoder::encode(
+            $token,
+            \BaconQrCode\Common\ErrorCorrectionLevel::L(),
+        );
+        $matrix = $qrCode->getMatrix();
+        $matrixWidth = $matrix->getWidth();
+        $cellSize = (int) floor($size / $matrixWidth);
+        $offset = (int) floor(($size - $cellSize * $matrixWidth) / 2);
+
+        $img = imagecreatetruecolor($size, $size);
+        $white = imagecolorallocate($img, 255, 255, 255);
+        $black = imagecolorallocate($img, 0, 0, 0);
+        imagefill($img, 0, 0, $white);
+
+        for ($y = 0; $y < $matrixWidth; $y++) {
+            for ($x = 0; $x < $matrixWidth; $x++) {
+                if ($matrix->get($x, $y) === 1) {
+                    imagefilledrectangle(
+                        $img,
+                        $offset + $x * $cellSize,
+                        $offset + $y * $cellSize,
+                        $offset + ($x + 1) * $cellSize - 1,
+                        $offset + ($y + 1) * $cellSize - 1,
+                        $black,
+                    );
+                }
+            }
+        }
+
+        imagepng($img, $tempPngPath);
+        unset($img);
+
+        return $tempPngPath;
+    }
 }

@@ -66,9 +66,13 @@ class MidtransService
 
         $snapToken = Snap::getSnapToken($params);
 
+        $baseUrl = config('services.midtrans.is_production', false)
+            ? 'https://app.midtrans.com/snap/v2/vtweb/'
+            : 'https://app.sandbox.midtrans.com/snap/v2/vtweb/';
+
         return [
             'token' => $snapToken,
-            'redirect_url' => "https://app.midtrans.com/snap/v2/vtweb/{$snapToken}",
+            'redirect_url' => $baseUrl.$snapToken,
         ];
     }
 

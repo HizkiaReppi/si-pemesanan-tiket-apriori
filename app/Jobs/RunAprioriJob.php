@@ -42,7 +42,7 @@ class RunAprioriJob implements ShouldQueue
         $startDate = $this->startDate ? CarbonImmutable::parse($this->startDate) : null;
         $endDate = $this->endDate ? CarbonImmutable::parse($this->endDate) : null;
 
-        $run = $aprioriService->run(
+        $run = $aprioriService->runAnalysis(
             minSupport: $this->minSupport,
             minConfidence: $this->minConfidence,
             startDate: $startDate,
