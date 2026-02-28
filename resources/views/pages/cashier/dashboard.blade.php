@@ -181,7 +181,7 @@ new #[Title('Dashboard Kasir')] #[Layout('layouts.app')] class extends Component
                                 <span class="rounded-full bg-sky-100 px-2 py-0.5 text-xs font-semibold text-sky-700 dark:bg-sky-900/30 dark:text-sky-400">{{ number_format($item->total_qty) }}x</span>
                             </div>
                             <div class="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-700">
-                                <div class="h-full rounded-full bg-gradient-to-r from-sky-500 to-emerald-500" style="width: {{ $maxQty > 0 ? ($item->total_qty / $maxQty) * 100 : 0 }}%"></div>
+                                <div class="h-full rounded-full bg-linear-to-r from-sky-500 to-emerald-500" style="width: {{ $maxQty > 0 ? ($item->total_qty / $maxQty) * 100 : 0 }}%"></div>
                             </div>
                         </div>
                     @empty
@@ -207,7 +207,7 @@ new #[Title('Dashboard Kasir')] #[Layout('layouts.app')] class extends Component
                                 @if($count > 0)
                                     <span class="text-[10px] font-medium text-zinc-600 dark:text-zinc-400">{{ $count }}</span>
                                 @endif
-                                <div class="w-full rounded-t-md transition-all {{ $count > 0 ? 'bg-gradient-to-t from-sky-500 to-sky-400 dark:from-sky-600 dark:to-sky-500' : 'bg-zinc-100 dark:bg-zinc-700' }}" style="height: {{ $maxHourly > 0 ? max(4, ($count / $maxHourly) * 110) : 4 }}px;"></div>
+                                <div class="w-full rounded-t-md transition-all {{ $count > 0 ? 'bg-linear-to-t from-sky-500 to-sky-400 dark:from-sky-600 dark:to-sky-500' : 'bg-zinc-100 dark:bg-zinc-700' }}" style="height: {{ $maxHourly > 0 ? max(4, ($count / $maxHourly) * 110) : 4 }}px;"></div>
                                 <span class="text-[10px] text-zinc-400">{{ $hour }}</span>
                             </div>
                         @endforeach

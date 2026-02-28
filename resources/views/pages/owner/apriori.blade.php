@@ -3,7 +3,6 @@
 use App\Models\AprioriRun;
 use App\Models\AssociationRule;
 use App\Models\FrequentItemset;
-use App\Services\AprioriService;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -27,9 +26,13 @@ new #[Title('Analisis Apriori - Pemilik')] #[Layout('layouts.app')] class extend
             ? FrequentItemset::where('apriori_run_id', $selectedRun->id)->orderByDesc('support')->take(20)->get()
             : collect();
 
-        // Get recommendations
+        // Get top business recommendations (high-lift rules)
         $recommendations = $selectedRun
-            ? app(AprioriService::class)->getRecommendations($selectedRun->id)
+            ? AssociationRule::where('apriori_run_id', $selectedRun->id)
+                ->where('lift', '>', 1.0)
+                ->orderByDesc('lift')
+                ->take(5)
+                ->get()
             : collect();
 
         $view->with([

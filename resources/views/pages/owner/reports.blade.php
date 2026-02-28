@@ -146,8 +146,14 @@ new #[Title('Laporan Pemilik')] #[Layout('layouts.app')] class extends Component
                     </div>
                     <div class="divide-y divide-zinc-100 dark:divide-zinc-800">
                         @foreach($dayTypeBreakdown as $dt)
+                            @php
+                                $dayTypeValue = $dt->day_type;
+                                $dayTypeLabel = $dayTypeValue instanceof \App\Enums\DayType
+                                    ? $dayTypeValue->label()
+                                    : (\App\Enums\DayType::tryFrom($dayTypeValue)?->label() ?? '-');
+                            @endphp
                             <div class="flex items-center justify-between p-4">
-                                <span class="text-sm text-zinc-900 dark:text-white">{{ \App\Enums\DayType::tryFrom($dt->day_type)?->label() ?? '-' }}</span>
+                                <span class="text-sm text-zinc-900 dark:text-white">{{ $dayTypeLabel }}</span>
                                 <div class="text-right">
                                     <p class="text-sm font-medium text-zinc-900 dark:text-white">Rp {{ number_format($dt->revenue, 0, ',', '.') }}</p>
                                     <p class="text-xs text-zinc-400">{{ $dt->orders }} pesanan</p>
@@ -162,8 +168,14 @@ new #[Title('Laporan Pemilik')] #[Layout('layouts.app')] class extends Component
                     </div>
                     <div class="divide-y divide-zinc-100 dark:divide-zinc-800">
                         @foreach($paymentBreakdown as $pm)
+                            @php
+                                $pmValue = $pm->payment_method;
+                                $pmLabel = $pmValue instanceof \App\Enums\PaymentMethod
+                                    ? $pmValue->label()
+                                    : (\App\Enums\PaymentMethod::tryFrom($pmValue)?->label() ?? '-');
+                            @endphp
                             <div class="flex items-center justify-between p-4">
-                                <span class="text-sm text-zinc-900 dark:text-white">{{ \App\Enums\PaymentMethod::tryFrom($pm->payment_method)?->label() ?? '-' }}</span>
+                                <span class="text-sm text-zinc-900 dark:text-white">{{ $pmLabel }}</span>
                                 <div class="text-right">
                                     <p class="text-sm font-medium text-zinc-900 dark:text-white">Rp {{ number_format($pm->revenue, 0, ',', '.') }}</p>
                                     <p class="text-xs text-zinc-400">{{ $pm->orders }} pesanan</p>

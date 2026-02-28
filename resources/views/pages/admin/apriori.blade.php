@@ -50,7 +50,7 @@ new #[Title('Analisis Apriori')] #[Layout('layouts.app')] class extends Componen
         $startDate = $this->startDate ? \Carbon\CarbonImmutable::parse($this->startDate) : null;
         $endDate = $this->endDate ? \Carbon\CarbonImmutable::parse($this->endDate) : null;
 
-        $service->run(
+        $service->runAnalysis(
             minSupport: $this->minSupport,
             minConfidence: $this->minConfidence,
             startDate: $startDate,

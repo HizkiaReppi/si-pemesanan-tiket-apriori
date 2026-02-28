@@ -172,8 +172,14 @@ new #[Title('Laporan')] #[Layout('layouts.app')] class extends Component {
                     </div>
                     <div class="divide-y divide-zinc-100 dark:divide-zinc-800">
                         @forelse($paymentBreakdown as $pm)
+                            @php
+                                $pmValue = $pm->payment_method;
+                                $pmLabel = $pmValue instanceof \App\Enums\PaymentMethod
+                                    ? $pmValue->label()
+                                    : ($pmValue ? (\App\Enums\PaymentMethod::tryFrom($pmValue)?->label() ?? ucfirst($pmValue)) : '-');
+                            @endphp
                             <div class="flex items-center justify-between p-4">
-                                <span class="text-sm text-zinc-900 dark:text-white">{{ $pm->payment_method ? \App\Enums\PaymentMethod::tryFrom($pm->payment_method)?->label() ?? ucfirst($pm->payment_method) : '-' }}</span>
+                                <span class="text-sm text-zinc-900 dark:text-white">{{ $pmLabel }}</span>
                                 <div class="text-right">
                                     <p class="text-sm font-medium text-zinc-900 dark:text-white">Rp {{ number_format($pm->total_revenue, 0, ',', '.') }}</p>
                                     <p class="text-xs text-zinc-400">{{ $pm->total_orders }} pesanan</p>
@@ -192,8 +198,14 @@ new #[Title('Laporan')] #[Layout('layouts.app')] class extends Component {
                     </div>
                     <div class="divide-y divide-zinc-100 dark:divide-zinc-800">
                         @forelse($dayTypeBreakdown as $dt)
+                            @php
+                                $dayTypeValue = $dt->day_type;
+                                $dayTypeLabel = $dayTypeValue instanceof \App\Enums\DayType
+                                    ? $dayTypeValue->label()
+                                    : (\App\Enums\DayType::tryFrom($dayTypeValue)?->label() ?? ucfirst($dayTypeValue ?? '-'));
+                            @endphp
                             <div class="flex items-center justify-between p-4">
-                                <span class="text-sm text-zinc-900 dark:text-white">{{ $dt->day_type ? \App\Enums\DayType::tryFrom($dt->day_type)?->label() ?? ucfirst($dt->day_type) : '-' }}</span>
+                                <span class="text-sm text-zinc-900 dark:text-white">{{ $dayTypeLabel }}</span>
                                 <div class="text-right">
                                     <p class="text-sm font-medium text-zinc-900 dark:text-white">Rp {{ number_format($dt->total_revenue, 0, ',', '.') }}</p>
                                     <p class="text-xs text-zinc-400">{{ $dt->total_orders }} pesanan</p>

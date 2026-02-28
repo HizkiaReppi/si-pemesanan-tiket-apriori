@@ -21,51 +21,67 @@ new #[Title('Pemindai Tiket')] #[Layout('layouts.app')] class extends Component 
     {
         $this->validate(['qrInput' => 'required|string']);
 
-        // Parse QR code: format is "ORDER_CODE|TOKEN"
-        $parts = explode('|', $this->qrInput);
-        if (count($parts) !== 2) {
-            $this->resultStatus = 'error';
-            $this->resultMessage = 'Format QR code tidak valid.';
-            $this->orderInfo = null;
+        $input = trim($this->qrInput);
 
-            return;
-        }
-
-        [$orderCode, $token] = $parts;
-
-        $order = Order::where('code', $orderCode)->first();
-        if (! $order) {
-            $this->resultStatus = 'error';
-            $this->resultMessage = 'Pesanan tidak ditemukan.';
-            $this->orderInfo = null;
-
-            return;
-        }
-
-        // Validate
+        // Try as full QR token first (ORDER_CODE|VISIT_DATE|SIGNATURE format)
         $validator = app(ValidateTicket::class);
-        $status = $validator->execute($order, $token);
+        $redeemer = app(RedeemTicket::class);
 
-        if ($status === CheckInStatus::Valid) {
-            // Redeem
-            $redeemer = app(RedeemTicket::class);
-            $checkIn = $redeemer->execute($order, $token, auth()->id());
+        // Check if input looks like a full QR token (contains | separator)
+        if (str_contains($input, '|')) {
+            $result = $redeemer->execute($input, auth()->id());
+        } else {
+            // Try as order code - find the order and use its qr_token
+            $order = Order::where('code', $input)->first();
 
+            if (! $order) {
+                $this->resultStatus = 'error';
+                $this->resultMessage = 'Pesanan tidak ditemukan.';
+                $this->orderInfo = null;
+                $this->qrInput = '';
+
+                return;
+            }
+
+            if (! $order->qr_token) {
+                $this->resultStatus = 'error';
+                $this->resultMessage = 'QR token tidak tersedia untuk pesanan ini.';
+                $this->orderInfo = null;
+                $this->qrInput = '';
+
+                return;
+            }
+
+            $result = $redeemer->execute($order->qr_token, auth()->id());
+        }
+
+        if ($result['success']) {
             $this->resultStatus = 'success';
-            $this->resultMessage = 'Tiket valid! Check-in berhasil.';
+            $this->resultMessage = $result['message'];
         } else {
             $this->resultStatus = 'error';
-            $this->resultMessage = $status->label();
+            $this->resultMessage = $result['message'];
         }
 
-        $this->orderInfo = [
-            'code' => $order->code,
-            'customer' => $order->customer_name,
-            'visit_date' => $order->visit_date->format('d/m/Y'),
-            'items' => $order->items->map(fn ($i) => "{$i->item_name} × {$i->quantity}")->implode(', '),
-            'total' => number_format($order->total, 0, ',', '.'),
-            'status' => $order->fresh()->status->label(),
-        ];
+        // Load order info from check_in or from search
+        $order = $result['check_in']?->order ?? (isset($order) ? $order : null);
+
+        if (! $order && str_contains($input, '|')) {
+            $parts = explode('|', $input);
+            $order = Order::where('code', $parts[0])->first();
+        }
+
+        if ($order) {
+            $order->load('items');
+            $this->orderInfo = [
+                'code' => $order->code,
+                'customer' => $order->customer_name,
+                'visit_date' => $order->visit_date->format('d/m/Y'),
+                'items' => $order->items->map(fn ($i) => "{$i->item_name} × {$i->quantity}")->implode(', '),
+                'total' => number_format($order->total, 0, ',', '.'),
+                'status' => $order->fresh()->status->label(),
+            ];
+        }
 
         $this->qrInput = '';
     }
@@ -84,6 +100,31 @@ new #[Title('Pemindai Tiket')] #[Layout('layouts.app')] class extends Component 
         scanner: null,
         cameraActive: false,
         cameraError: null,
+        libraryLoaded: false,
+
+        async loadLibrary() {
+            if (this.libraryLoaded) return true;
+
+            // Check if already loaded globally
+            if (typeof Html5Qrcode !== 'undefined') {
+                this.libraryLoaded = true;
+                return true;
+            }
+
+            // Load via script tag dynamically
+            return new Promise((resolve) => {
+                const script = document.createElement('script');
+                script.src = 'https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js';
+                script.onload = () => {
+                    this.libraryLoaded = true;
+                    resolve(true);
+                };
+                script.onerror = () => {
+                    resolve(false);
+                };
+                document.head.appendChild(script);
+            });
+        },
 
         async initCamera() {
             if (this.scanner) {
@@ -92,14 +133,9 @@ new #[Title('Pemindai Tiket')] #[Layout('layouts.app')] class extends Component 
 
             this.cameraError = null;
 
-            try {
-                const { Html5Qrcode } = await import('https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js');
-            } catch (e) {
-                // Library loaded via script tag
-            }
-
-            if (typeof Html5Qrcode === 'undefined') {
-                this.cameraError = 'Pustaka pemindai tidak tersedia. Gunakan mode manual.';
+            const loaded = await this.loadLibrary();
+            if (!loaded || typeof Html5Qrcode === 'undefined') {
+                this.cameraError = 'Pustaka pemindai tidak tersedia. Periksa koneksi internet Anda atau gunakan mode manual.';
                 return;
             }
 
@@ -176,7 +212,18 @@ new #[Title('Pemindai Tiket')] #[Layout('layouts.app')] class extends Component 
                     <button @click="initCamera()" class="mt-3 text-sm font-medium text-sky-600 hover:text-sky-700 dark:text-sky-400">Coba lagi</button>
                 </div>
             </template>
-            <div id="qr-reader" class="mx-auto overflow-hidden rounded-lg" style="max-width: 400px;"></div>
+            <div class="relative">
+                <div id="qr-reader" class="mx-auto overflow-hidden rounded-lg" style="max-width: 400px;"></div>
+                <div wire:loading wire:target="scan" class="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-white/80 dark:bg-zinc-900/80">
+                    <div class="flex flex-col items-center gap-3">
+                        <svg class="size-10 animate-spin text-sky-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                        </svg>
+                        <span class="text-sm font-medium text-sky-700 dark:text-sky-400">Memproses tiket...</span>
+                    </div>
+                </div>
+            </div>
             <p class="mt-4 text-center text-sm text-zinc-500 dark:text-zinc-400">
                 Arahkan kamera ke QR code pada e-tiket pengunjung
             </p>
@@ -185,11 +232,19 @@ new #[Title('Pemindai Tiket')] #[Layout('layouts.app')] class extends Component 
         {{-- Manual Input --}}
         <div x-show="mode === 'manual'" x-cloak class="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-700 dark:bg-zinc-900">
             <form wire:submit="scan" class="space-y-4">
-                <flux:input wire:model="qrInput" label="Kode QR / Kode Pesanan" placeholder="Masukkan kode dari e-tiket..." autofocus />
-                <flux:button type="submit" variant="primary" class="w-full" icon="qr-code">
-                    Validasi Tiket
+                <flux:input wire:model="qrInput" label="Kode QR / Kode Pesanan" placeholder="Masukkan kode pesanan (contoh: ORD-20260228-ABCDEF)" autofocus />
+                <flux:button type="submit" variant="primary" class="w-full" icon="qr-code" wire:loading.attr="disabled" wire:target="scan">
+                    <span wire:loading.remove wire:target="scan">Validasi Tiket</span>
+                    <span wire:loading wire:target="scan">Memproses...</span>
                 </flux:button>
             </form>
+            <div wire:loading wire:target="scan" class="mt-4 flex items-center justify-center gap-2 text-sm text-sky-600 dark:text-sky-400">
+                <svg class="size-5 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                </svg>
+                Memvalidasi tiket...
+            </div>
         </div>
 
         <!-- Result -->
@@ -246,7 +301,3 @@ new #[Title('Pemindai Tiket')] #[Layout('layouts.app')] class extends Component 
         @endif
     </div>
 </div>
-
-@script
-<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-@endscript

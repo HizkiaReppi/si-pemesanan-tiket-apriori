@@ -237,7 +237,7 @@ new #[Title('Dashboard Pemilik')] #[Layout('layouts.app')] class extends Compone
                         <div class="flex flex-1 flex-col items-center gap-1">
                             <span class="text-[10px] font-semibold text-zinc-600 dark:text-zinc-400">{{ $day['orders'] }}</span>
                             <span class="text-[10px] text-zinc-400">{{ number_format($day['revenue'] / 1000, 0) }}K</span>
-                            <div class="w-full rounded-t-lg bg-gradient-to-t from-sky-500 to-sky-400 dark:from-sky-600 dark:to-sky-500" style="height: {{ $maxRevenue > 0 ? max(6, ($day['revenue'] / $maxRevenue) * 120) : 6 }}px;"></div>
+                            <div class="w-full rounded-t-lg bg-linear-to-t from-sky-500 to-sky-400 dark:from-sky-600 dark:to-sky-500" style="height: {{ $maxRevenue > 0 ? max(6, ($day['revenue'] / $maxRevenue) * 120) : 6 }}px;"></div>
                             <span class="text-xs font-medium text-zinc-500 dark:text-zinc-400">{{ $day['date'] }}</span>
                         </div>
                     @endforeach
@@ -253,7 +253,7 @@ new #[Title('Dashboard Pemilik')] #[Layout('layouts.app')] class extends Compone
                         <div class="flex flex-1 flex-col items-center gap-1">
                             <span class="text-[10px] font-semibold text-zinc-600 dark:text-zinc-400">{{ $m['orders'] }}</span>
                             <span class="text-[10px] text-zinc-400">{{ number_format($m['revenue'] / 1000000, 1) }}Jt</span>
-                            <div class="w-full rounded-t-lg bg-gradient-to-t from-emerald-500 to-emerald-400 dark:from-emerald-600 dark:to-emerald-500" style="height: {{ $maxMonthly > 0 ? max(6, ($m['revenue'] / $maxMonthly) * 120) : 6 }}px;"></div>
+                            <div class="w-full rounded-t-lg bg-linear-to-t from-emerald-500 to-emerald-400 dark:from-emerald-600 dark:to-emerald-500" style="height: {{ $maxMonthly > 0 ? max(6, ($m['revenue'] / $maxMonthly) * 120) : 6 }}px;"></div>
                             <span class="text-xs font-medium text-zinc-500 dark:text-zinc-400">{{ $m['month'] }}</span>
                         </div>
                     @endforeach

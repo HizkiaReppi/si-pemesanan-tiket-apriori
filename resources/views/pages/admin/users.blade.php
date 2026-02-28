@@ -7,12 +7,10 @@ use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-new #[Title('Kelola Pengguna')] #[Layout('layouts.app')] class extends Component {
+new #[Title('Kelola Pelanggan')] #[Layout('layouts.app')] class extends Component {
     use WithPagination;
 
     public string $search = '';
-
-    public string $roleFilter = '';
 
     public bool $showModal = false;
 
@@ -24,8 +22,6 @@ new #[Title('Kelola Pengguna')] #[Layout('layouts.app')] class extends Component
 
     public string $phone = '';
 
-    public string $role = 'customer';
-
     public string $password = '';
 
     public function updatedSearch(): void
@@ -35,18 +31,17 @@ new #[Title('Kelola Pengguna')] #[Layout('layouts.app')] class extends Component
 
     public function create(): void
     {
-        $this->reset(['editingId', 'name', 'email', 'phone', 'role', 'password']);
+        $this->reset(['editingId', 'name', 'email', 'phone', 'password']);
         $this->showModal = true;
     }
 
     public function edit(int $id): void
     {
-        $user = User::findOrFail($id);
+        $user = User::where('role', UserRole::Customer)->findOrFail($id);
         $this->editingId = $user->id;
         $this->name = $user->name;
         $this->email = $user->email;
         $this->phone = $user->phone ?? '';
-        $this->role = $user->role->value;
         $this->password = '';
         $this->showModal = true;
     }
@@ -56,7 +51,6 @@ new #[Title('Kelola Pengguna')] #[Layout('layouts.app')] class extends Component
         $rules = [
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $this->editingId,
-            'role' => 'required|in:' . implode(',', array_column(UserRole::cases(), 'value')),
         ];
 
         if (! $this->editingId) {
@@ -69,7 +63,7 @@ new #[Title('Kelola Pengguna')] #[Layout('layouts.app')] class extends Component
             'name' => $this->name,
             'email' => $this->email,
             'phone' => $this->phone ?: null,
-            'role' => $this->role,
+            'role' => UserRole::Customer->value,
         ];
 
         if ($this->password) {
@@ -79,22 +73,18 @@ new #[Title('Kelola Pengguna')] #[Layout('layouts.app')] class extends Component
         User::updateOrCreate(['id' => $this->editingId], $data);
 
         $this->showModal = false;
-        session()->flash('success', $this->editingId ? 'Pengguna berhasil diperbarui.' : 'Pengguna berhasil ditambahkan.');
+        session()->flash('success', $this->editingId ? 'Pelanggan berhasil diperbarui.' : 'Pelanggan berhasil ditambahkan.');
     }
 
     public function rendering(\Illuminate\View\View $view): void
     {
-        $query = User::latest();
+        $query = User::where('role', UserRole::Customer)->latest();
 
         if ($this->search) {
             $query->where(function ($q) {
                 $q->where('name', 'like', "%{$this->search}%")
                     ->orWhere('email', 'like', "%{$this->search}%");
             });
-        }
-
-        if ($this->roleFilter) {
-            $query->where('role', $this->roleFilter);
         }
 
         $view->with('users', $query->paginate(15));
@@ -104,8 +94,8 @@ new #[Title('Kelola Pengguna')] #[Layout('layouts.app')] class extends Component
 <div>
     <div class="space-y-6">
         <div class="flex items-center justify-between">
-            <flux:heading size="xl">Pengguna</flux:heading>
-            <flux:button wire:click="create" variant="primary" icon="plus" size="sm">Tambah Pengguna</flux:button>
+            <flux:heading size="xl">Pelanggan</flux:heading>
+            <flux:button wire:click="create" variant="primary" icon="plus" size="sm">Tambah Pelanggan</flux:button>
         </div>
 
         @if(session('success'))
@@ -116,12 +106,6 @@ new #[Title('Kelola Pengguna')] #[Layout('layouts.app')] class extends Component
 
         <div class="flex gap-3">
             <flux:input wire:model.live.debounce.300ms="search" placeholder="Cari nama/email..." icon="magnifying-glass" class="max-w-xs" />
-            <flux:select wire:model.live="roleFilter" class="max-w-[200px]">
-                <flux:select.option value="">Semua Role</flux:select.option>
-                @foreach(UserRole::cases() as $r)
-                    <flux:select.option value="{{ $r->value }}">{{ $r->label() }}</flux:select.option>
-                @endforeach
-            </flux:select>
         </div>
 
         <div class="overflow-hidden rounded-xl border border-zinc-200 bg-white dark:border-zinc-700 dark:bg-zinc-900">
@@ -130,7 +114,7 @@ new #[Title('Kelola Pengguna')] #[Layout('layouts.app')] class extends Component
                     <tr>
                         <th class="px-4 py-3 text-left font-medium text-zinc-600 dark:text-zinc-400">Nama</th>
                         <th class="px-4 py-3 text-left font-medium text-zinc-600 dark:text-zinc-400">Email</th>
-                        <th class="px-4 py-3 text-left font-medium text-zinc-600 dark:text-zinc-400">Role</th>
+                        <th class="px-4 py-3 text-left font-medium text-zinc-600 dark:text-zinc-400">No. HP</th>
                         <th class="px-4 py-3 text-left font-medium text-zinc-600 dark:text-zinc-400">Terdaftar</th>
                         <th class="px-4 py-3 text-left font-medium text-zinc-600 dark:text-zinc-400">Aksi</th>
                     </tr>
@@ -140,9 +124,7 @@ new #[Title('Kelola Pengguna')] #[Layout('layouts.app')] class extends Component
                         <tr>
                             <td class="px-4 py-3 font-medium text-zinc-900 dark:text-white">{{ $user->name }}</td>
                             <td class="px-4 py-3 text-zinc-600 dark:text-zinc-400">{{ $user->email }}</td>
-                            <td class="px-4 py-3">
-                                <flux:badge size="sm">{{ $user->role->label() }}</flux:badge>
-                            </td>
+                            <td class="px-4 py-3 text-zinc-600 dark:text-zinc-400">{{ $user->phone ?? '-' }}</td>
                             <td class="px-4 py-3 text-zinc-600 dark:text-zinc-400">{{ $user->created_at->format('d/m/Y') }}</td>
                             <td class="px-4 py-3">
                                 <flux:button wire:click="edit({{ $user->id }})" variant="ghost" size="xs" icon="pencil">
@@ -162,16 +144,11 @@ new #[Title('Kelola Pengguna')] #[Layout('layouts.app')] class extends Component
         {{ $users->links() }}
         <flux:modal wire:model="showModal" class="max-w-lg">
             <div class="space-y-6">
-                <flux:heading size="lg">{{ $editingId ? 'Edit Pengguna' : 'Tambah Pengguna' }}</flux:heading>
+                <flux:heading size="lg">{{ $editingId ? 'Edit Pelanggan' : 'Tambah Pelanggan' }}</flux:heading>
 
                 <flux:input wire:model="name" label="Nama" required />
                 <flux:input wire:model="email" label="Email" type="email" required />
                 <flux:input wire:model="phone" label="No. Telepon" />
-                <flux:select wire:model="role" label="Role">
-                    @foreach(UserRole::cases() as $r)
-                        <flux:select.option value="{{ $r->value }}">{{ $r->label() }}</flux:select.option>
-                    @endforeach
-                </flux:select>
                 <flux:input wire:model="password" label="{{ $editingId ? 'Password (kosongkan jika tidak diubah)' : 'Password' }}" type="password" :required="!$editingId" />
 
                 <div class="flex justify-end gap-3">

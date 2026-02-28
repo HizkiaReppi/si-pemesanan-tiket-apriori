@@ -21,6 +21,28 @@ new #[Title('Detail Pesanan - Admin')] #[Layout('layouts.app')] class extends Co
         session()->flash('success', 'Pesanan berhasil dibatalkan.');
         $this->order = $this->order->fresh(['items', 'payment', 'checkIns', 'voucherUsages.voucher', 'user']);
     }
+
+    public function deleteOrder(): void
+    {
+        $code = $this->order->code;
+
+        \Illuminate\Support\Facades\DB::transaction(function (): void {
+            $this->order->auditLogs()->delete();
+            $this->order->checkIns()->delete();
+            $this->order->voucherUsages()->delete();
+            $this->order->items()->delete();
+
+            if ($this->order->payment) {
+                $this->order->payment->delete();
+            }
+
+            $this->order->delete();
+        });
+
+        session()->flash('success', "Pesanan {$code} berhasil dihapus.");
+
+        $this->redirect(route('admin.pesanan'), navigate: true);
+    }
 }; ?>
 
 <div>
@@ -139,10 +161,55 @@ new #[Title('Detail Pesanan - Admin')] #[Layout('layouts.app')] class extends Co
         <!-- Actions -->
         @if(! in_array($order->status->value, ['completed', 'cancelled']))
             <div class="flex gap-3">
-                <flux:button wire:click="cancelOrder" wire:confirm="Yakin ingin membatalkan pesanan ini?" variant="danger">
+                <flux:button x-on:click="$flux.modal('confirm-cancel').show()" variant="danger">
                     Batalkan Pesanan
+                </flux:button>
+                <flux:button x-on:click="$flux.modal('confirm-delete').show()" variant="danger" icon="trash">
+                    Hapus Pesanan
+                </flux:button>
+            </div>
+
+            <flux:modal name="confirm-cancel" class="max-w-md">
+                <div class="space-y-4">
+                    <div class="flex items-center gap-3">
+                        <div class="flex size-10 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
+                            <flux:icon name="exclamation-triangle" class="size-6 text-red-600" />
+                        </div>
+                        <flux:heading size="lg">Batalkan Pesanan</flux:heading>
+                    </div>
+                    <p class="text-sm text-zinc-600 dark:text-zinc-400">
+                        Apakah Anda yakin ingin membatalkan pesanan <strong>{{ $order->code }}</strong>? Tindakan ini tidak dapat dibatalkan.
+                    </p>
+                    <div class="flex justify-end gap-2">
+                        <flux:button x-on:click="$flux.modal('confirm-cancel').close()" variant="ghost">Batal</flux:button>
+                        <flux:button wire:click="cancelOrder" x-on:click="$flux.modal('confirm-cancel').close()" variant="danger" icon="x-mark">Ya, Batalkan</flux:button>
+                    </div>
+                </div>
+            </flux:modal>
+        @else
+            <div class="flex gap-3">
+                <flux:button x-on:click="$flux.modal('confirm-delete').show()" variant="danger" icon="trash">
+                    Hapus Pesanan
                 </flux:button>
             </div>
         @endif
+
+        <flux:modal name="confirm-delete" class="max-w-md">
+            <div class="space-y-4">
+                <div class="flex items-center gap-3">
+                    <div class="flex size-10 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
+                        <flux:icon name="trash" class="size-6 text-red-600" />
+                    </div>
+                    <flux:heading size="lg">Hapus Pesanan</flux:heading>
+                </div>
+                <p class="text-sm text-zinc-600 dark:text-zinc-400">
+                    Apakah Anda yakin ingin <strong>menghapus permanen</strong> pesanan <strong>{{ $order->code }}</strong>? Semua data terkait (pembayaran, item, check-in, log) akan ikut terhapus. Tindakan ini <strong>tidak dapat dibatalkan</strong>.
+                </p>
+                <div class="flex justify-end gap-2">
+                    <flux:button x-on:click="$flux.modal('confirm-delete').close()" variant="ghost">Batal</flux:button>
+                    <flux:button wire:click="deleteOrder" x-on:click="$flux.modal('confirm-delete').close()" variant="danger" icon="trash">Ya, Hapus</flux:button>
+                </div>
+            </div>
+        </flux:modal>
     </div>
 </div>

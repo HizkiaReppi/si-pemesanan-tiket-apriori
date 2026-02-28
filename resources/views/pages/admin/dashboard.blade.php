@@ -245,7 +245,7 @@ new #[Title('Dashboard Admin')] #[Layout('layouts.app')] class extends Component
                             <span class="text-[10px] text-zinc-400">
                                 Rp {{ number_format($day['revenue'] / 1000, 0) }}K
                             </span>
-                            <div class="w-full rounded-t-lg bg-gradient-to-t from-sky-500 to-sky-400 transition-all dark:from-sky-600 dark:to-sky-500" style="height: {{ $maxRevenue > 0 ? max(8, ($day['revenue'] / $maxRevenue) * 140) : 8 }}px;"></div>
+                            <div class="w-full rounded-t-lg bg-linear-to-t from-sky-500 to-sky-400 transition-all dark:from-sky-600 dark:to-sky-500" style="height: {{ $maxRevenue > 0 ? max(8, ($day['revenue'] / $maxRevenue) * 140) : 8 }}px;"></div>
                             <span class="text-xs font-medium text-zinc-500 dark:text-zinc-400">{{ $day['date'] }}</span>
                         </div>
                     @endforeach
@@ -279,7 +279,7 @@ new #[Title('Dashboard Admin')] #[Layout('layouts.app')] class extends Component
                                 <span class="text-sm text-zinc-500 dark:text-zinc-400">{{ number_format($ticket->total_qty) }} tiket</span>
                             </div>
                             <div class="mt-2 h-2 w-full overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-700">
-                                <div class="h-full rounded-full bg-gradient-to-r from-sky-500 to-emerald-500" style="width: {{ $maxQty > 0 ? ($ticket->total_qty / $maxQty) * 100 : 0 }}%"></div>
+                                <div class="h-full rounded-full bg-linear-to-r from-sky-500 to-emerald-500" style="width: {{ $maxQty > 0 ? ($ticket->total_qty / $maxQty) * 100 : 0 }}%"></div>
                             </div>
                             <p class="mt-1 text-xs text-zinc-400">Rp {{ number_format($ticket->total_revenue, 0, ',', '.') }}</p>
                         </div>

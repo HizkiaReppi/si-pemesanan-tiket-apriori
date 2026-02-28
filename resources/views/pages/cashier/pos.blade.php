@@ -20,6 +20,8 @@ new #[Title('Point of Sale')] #[Layout('layouts.app')] class extends Component {
 
     public string $voucherCode = '';
 
+    public string $paymentMethod = 'cash';
+
     public array $items = [];
 
     public float $discount = 0;
@@ -119,6 +121,8 @@ new #[Title('Point of Sale')] #[Layout('layouts.app')] class extends Component {
             'items' => $cartItems,
         ];
 
+        $selectedMethod = \App\Enums\PaymentMethod::from($this->paymentMethod);
+
         $action = app(CreateOrder::class);
         $order = $action->execute(
             cart: $cart,
@@ -127,20 +131,27 @@ new #[Title('Point of Sale')] #[Layout('layouts.app')] class extends Component {
                 'email' => $this->customerEmail ?: null,
                 'phone' => $this->customerPhone ?: null,
             ],
-            paymentMethod: \App\Enums\PaymentMethod::Cash,
+            paymentMethod: $selectedMethod,
             userId: null,
         );
 
-        // Mark as paid immediately for cash
-        $order->update(['status' => \App\Enums\OrderStatus::Paid]);
-        $order->payment?->update([
-            'status' => \App\Enums\PaymentStatus::Paid,
-            'paid_at' => now(),
-        ]);
+        if ($selectedMethod === \App\Enums\PaymentMethod::Cash) {
+            // Mark as paid immediately for cash
+            $order->update(['status' => \App\Enums\OrderStatus::Paid]);
+            $order->payment?->update([
+                'status' => \App\Enums\PaymentStatus::Paid,
+                'paid_at' => now(),
+                'verified_by' => auth()->id(),
+                'verified_at' => now(),
+            ]);
 
-        event(new \App\Events\OrderPaid($order));
+            event(new \App\Events\OrderPaid($order));
+            session()->flash('success', "Pesanan {$order->code} berhasil dibuat dan dibayar tunai!");
+        } else {
+            // Non-cash: order created, awaiting payment
+            session()->flash('success', "Pesanan {$order->code} berhasil dibuat. Menunggu pembayaran {$selectedMethod->label()}.");
+        }
 
-        session()->flash('success', "Pesanan {$order->code} berhasil dibuat!");
         $this->redirect(route('kasir.pesanan'), navigate: true);
     }
 
@@ -217,8 +228,17 @@ new #[Title('Point of Sale')] #[Layout('layouts.app')] class extends Component {
                             <span>Rp {{ number_format($total, 0, ',', '.') }}</span>
                         </div>
                     </div>
-                    <flux:button wire:click="placeOrder" variant="primary" class="mt-4 w-full" icon="banknotes">
-                        Proses Pembayaran Tunai
+
+                    <div class="mt-4">
+                        <flux:select wire:model="paymentMethod" label="Metode Pembayaran">
+                            <flux:select.option value="cash">Tunai</flux:select.option>
+                            <flux:select.option value="bank_transfer">Transfer Bank</flux:select.option>
+                            <flux:select.option value="midtrans">Non-Tunai (Midtrans)</flux:select.option>
+                        </flux:select>
+                    </div>
+
+                    <flux:button wire:click="placeOrder" variant="primary" class="mt-4 w-full" :icon="$paymentMethod === 'cash' ? 'banknotes' : 'credit-card'">
+                        {{ $paymentMethod === 'cash' ? 'Proses Pembayaran Tunai' : 'Buat Pesanan' }}
                     </flux:button>
                 </div>
             </div>
