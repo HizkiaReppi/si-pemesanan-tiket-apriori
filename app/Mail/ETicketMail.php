@@ -17,14 +17,32 @@ class ETicketMail extends Mailable implements ShouldQueue
 
     public string $qrSvg;
 
+    public ?string $qrPngPath = null;
+
     /**
      * Create a new message instance.
      */
     public function __construct(public Order $order)
     {
+        $qrService = app(QrCodeService::class);
+
         $this->qrSvg = $order->qr_token
-            ? app(QrCodeService::class)->generateSvg($order->qr_token, 200)
+            ? $qrService->generateSvg($order->qr_token, 200)
             : '';
+
+        if ($order->qr_token) {
+            $this->qrPngPath = $qrService->generatePng($order->qr_token, 300);
+
+            $this->withSymfonyMessage(function (\Symfony\Component\Mime\Email $message): void {
+                if ($this->qrPngPath && file_exists($this->qrPngPath)) {
+                    $message->embed(
+                        fopen($this->qrPngPath, 'r'),
+                        'qr-code',
+                        'image/png',
+                    );
+                }
+            });
+        }
     }
 
     /**
@@ -43,9 +61,10 @@ class ETicketMail extends Mailable implements ShouldQueue
     public function content(): Content
     {
         return new Content(
-            markdown: 'mail.e-ticket',
+            view: 'mail.e-ticket',
             with: [
                 'qrSvg' => $this->qrSvg,
+                'qrImageCid' => $this->qrPngPath ? 'cid:qr-code' : null,
             ],
         );
     }

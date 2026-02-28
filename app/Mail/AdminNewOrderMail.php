@@ -35,7 +35,7 @@ class AdminNewOrderMail extends Mailable implements ShouldQueue
     public function content(): Content
     {
         return new Content(
-            markdown: 'mail.admin-new-order',
+            view: 'mail.admin-new-order',
         );
     }
 }

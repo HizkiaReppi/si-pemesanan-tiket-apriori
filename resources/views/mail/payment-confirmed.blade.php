@@ -1,34 +1,51 @@
-<x-mail::message>
-# Pembayaran Dikonfirmasi
+<x-mail.layout :subject="'Pembayaran Dikonfirmasi - ' . $order->code" headerSubtitle="Konfirmasi Pembayaran">
+    <h2>Halo, {{ $order->customer_name }}! ✅</h2>
+    <p>Pembayaran untuk pesanan Anda telah <strong>berhasil dikonfirmasi</strong>. Berikut ringkasan pesanan Anda:</p>
 
-Halo **{{ $order->customer_name }}**,
+    <div class="info-card">
+        <div class="info-row">
+            <span class="info-label">Kode Pesanan</span>
+            <span class="info-value">{{ $order->code }}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Tanggal Kunjungan</span>
+            <span class="info-value">{{ $order->visit_date->translatedFormat('l, d F Y') }}</span>
+        </div>
+        <div class="info-row">
+            <span class="info-label">Total Dibayar</span>
+            <span class="info-value">Rp {{ number_format($order->total, 0, ',', '.') }}</span>
+        </div>
+    </div>
 
-Pembayaran untuk pesanan Anda telah **berhasil dikonfirmasi**. Berikut ringkasan pesanan Anda:
+    <h2>Detail Item</h2>
+    <table class="items-table">
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th style="text-align: center;">Jumlah</th>
+                <th>Harga</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($order->items as $item)
+                <tr>
+                    <td>{{ $item->item_name }}</td>
+                    <td style="text-align: center;">{{ $item->quantity }}</td>
+                    <td style="text-align: right;">Rp {{ number_format($item->subtotal, 0, ',', '.') }}</td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
 
-**Kode Pesanan:** {{ $order->code }}
-**Tanggal Kunjungan:** {{ $order->visit_date->translatedFormat('l, d F Y') }}
-**Total Dibayar:** Rp {{ number_format($order->total, 0, ',', '.') }}
+    <hr class="divider">
 
----
+    <div class="alert-success">
+        🎫 E-Tiket Anda akan segera dikirim dalam email terpisah. Silakan tunjukkan QR Code di pintu masuk pada tanggal kunjungan.
+    </div>
 
-## Detail Item
+    <div class="btn-block">
+        <a href="{{ route('pesanan.detail', $order) }}" class="btn">Lihat Detail Pesanan</a>
+    </div>
 
-<x-mail::table>
-| Item | Jumlah | Harga |
-|:-----|:------:|------:|
-@foreach($order->items as $item)
-| {{ $item->item_name }} | {{ $item->quantity }} | Rp {{ number_format($item->subtotal, 0, ',', '.') }} |
-@endforeach
-</x-mail::table>
-
----
-
-E-Tiket Anda akan segera dikirim dalam email terpisah. Silakan tunjukkan QR Code di pintu masuk pada tanggal kunjungan.
-
-<x-mail::button :url="route('pesanan.detail', $order)">
-Lihat Detail Pesanan
-</x-mail::button>
-
-Salam hangat,<br>
-{{ config('app.name') }}
-</x-mail::message>
+    <p class="text-muted">Salam hangat,<br>Tim Kolam Po'opo</p>
+</x-mail.layout>

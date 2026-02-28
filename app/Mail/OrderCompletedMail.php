@@ -35,7 +35,7 @@ class OrderCompletedMail extends Mailable implements ShouldQueue
     public function content(): Content
     {
         return new Content(
-            markdown: 'mail.order-completed',
+            view: 'mail.order-completed',
         );
     }
 }

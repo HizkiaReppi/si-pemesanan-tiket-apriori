@@ -35,7 +35,7 @@ class PaymentConfirmedMail extends Mailable implements ShouldQueue
     public function content(): Content
     {
         return new Content(
-            markdown: 'mail.payment-confirmed',
+            view: 'mail.payment-confirmed',
         );
     }
 }
