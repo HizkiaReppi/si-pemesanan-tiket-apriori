@@ -15,9 +15,11 @@ use App\Models\Payment;
 use App\Observers\OrderObserver;
 use App\Observers\PaymentObserver;
 use Carbon\CarbonImmutable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 
@@ -38,6 +40,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->configureDefaults();
         $this->configureEvents();
+        $this->configureProduction();
     }
 
     /**
@@ -83,5 +86,22 @@ class AppServiceProvider extends ServiceProvider
                 ->uncompromised()
             : null,
         );
+
+        // Enforce strict model behavior
+        Model::shouldBeStrict(! app()->isProduction());
+    }
+
+    /**
+     * Configure production-specific optimizations.
+     */
+    protected function configureProduction(): void
+    {
+        // Force HTTPS in production
+        if (app()->isProduction()) {
+            URL::forceScheme('https');
+        }
+
+        // Prevent N+1 queries in development
+        Model::preventLazyLoading(! app()->isProduction());
     }
 }
