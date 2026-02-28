@@ -138,6 +138,15 @@ class Order extends Model
             && $this->visit_date->diffInHours(now()) >= 24;
     }
 
+    public function scopePaid($query)
+    {
+        return $query->whereIn('status', [
+            OrderStatus::Paid,
+            OrderStatus::Confirmed,
+            OrderStatus::Completed,
+        ]);
+    }
+
     public function scopeForStatus($query, OrderStatus $status)
     {
         return $query->where('status', $status);

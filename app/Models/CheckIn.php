@@ -44,4 +44,24 @@ class CheckIn extends Model
     {
         return $this->belongsTo(User::class, 'scanned_by');
     }
+
+    /**
+     * Alias for scanner relationship.
+     *
+     * @return BelongsTo<User, $this>
+     */
+    public function scannedBy(): BelongsTo
+    {
+        return $this->scanner();
+    }
+
+    /**
+     * Alias for scanner relationship.
+     *
+     * @return BelongsTo<User, $this>
+     */
+    public function checkedInBy(): BelongsTo
+    {
+        return $this->scanner();
+    }
 }

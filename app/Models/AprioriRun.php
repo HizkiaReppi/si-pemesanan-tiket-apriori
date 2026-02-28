@@ -19,6 +19,8 @@ class AprioriRun extends Model
         'date_to',
         'total_transactions',
         'total_items',
+        'total_frequent_itemsets',
+        'total_rules',
         'status',
         'started_at',
         'completed_at',
