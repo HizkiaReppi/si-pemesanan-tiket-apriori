@@ -7,7 +7,7 @@
         <div class="relative grid h-dvh flex-col items-center justify-center px-8 sm:px-0 lg:max-w-none lg:grid-cols-2 lg:px-0">
             {{-- Left Panel - Pool Themed --}}
             <div class="relative hidden h-full flex-col overflow-hidden p-10 text-white lg:flex">
-                <div class="absolute inset-0 bg-gradient-to-br from-sky-500 via-sky-600 to-sky-800"></div>
+                <div class="absolute inset-0 bg-linear-to-br from-sky-500 via-sky-600 to-sky-800"></div>
                 <div class="absolute inset-0 opacity-10">
                     <svg class="h-full w-full" viewBox="0 0 800 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <circle cx="100" cy="200" r="180" fill="currentColor" class="text-white"/>
@@ -51,7 +51,7 @@
 
             {{-- Right Panel - Form --}}
             <div class="w-full lg:p-8">
-                <div class="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
+                <div class="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-87.5">
                     <a href="{{ route('home') }}" class="z-20 flex flex-col items-center gap-2 font-medium lg:hidden" wire:navigate>
                         <span class="flex h-9 w-9 items-center justify-center rounded-md bg-sky-600">
                             <x-app-logo-icon class="size-6 fill-current text-white" />

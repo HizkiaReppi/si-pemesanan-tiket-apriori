@@ -47,6 +47,9 @@
                         <flux:sidebar.item icon="tag" :href="route('admin.voucher')" :current="request()->routeIs('admin.voucher')" wire:navigate>
                             Voucher
                         </flux:sidebar.item>
+                        <flux:sidebar.item icon="photo" :href="route('admin.galeri')" :current="request()->routeIs('admin.galeri')" wire:navigate>
+                            Galeri
+                        </flux:sidebar.item>
                     </flux:sidebar.group>
 
                     <flux:sidebar.group heading="Analisis & Laporan" class="grid">
@@ -59,8 +62,8 @@
                     </flux:sidebar.group>
 
                     <flux:sidebar.group heading="Sistem" class="grid">
-                        <flux:sidebar.item icon="user-group" :href="route('admin.pengguna')" :current="request()->routeIs('admin.pengguna')" wire:navigate>
-                            Pengguna
+                        <flux:sidebar.item icon="users" :href="route('admin.pengguna')" :current="request()->routeIs('admin.pengguna')" wire:navigate>
+                            Pelanggan
                         </flux:sidebar.item>
                         <flux:sidebar.item icon="document-text" :href="route('admin.audit-log')" :current="request()->routeIs('admin.audit-log')" wire:navigate>
                             Audit Log
@@ -81,6 +84,9 @@
                         </flux:sidebar.item>
                         <flux:sidebar.item icon="clipboard-document-list" :href="route('kasir.pesanan')" :current="request()->routeIs('kasir.pesanan')" wire:navigate>
                             Pesanan Kasir
+                        </flux:sidebar.item>
+                        <flux:sidebar.item icon="credit-card" :href="route('kasir.verifikasi')" :current="request()->routeIs('kasir.verifikasi')" wire:navigate>
+                            Verifikasi Pembayaran
                         </flux:sidebar.item>
                     </flux:sidebar.group>
                 @endif
@@ -110,6 +116,9 @@
                         </flux:sidebar.item>
                         <flux:sidebar.item icon="cpu-chip" :href="route('pemilik.apriori')" :current="request()->routeIs('pemilik.apriori')" wire:navigate>
                             Analisis Apriori
+                        </flux:sidebar.item>
+                        <flux:sidebar.item icon="user-group" :href="route('pemilik.staf')" :current="request()->routeIs('pemilik.staf')" wire:navigate>
+                            Manajemen Staff
                         </flux:sidebar.item>
                     </flux:sidebar.group>
                 @endif
