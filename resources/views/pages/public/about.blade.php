@@ -9,7 +9,7 @@ new #[Title('Tentang Kami - Kolam Po\'opo')] #[Layout('layouts.guest')] class ex
 
 <div>
     <!-- Hero -->
-    <section class="relative overflow-hidden bg-gradient-to-br from-sky-600 via-sky-700 to-sky-900 py-24">
+    <section class="relative overflow-hidden bg-linear-to-br from-sky-600 via-sky-700 to-sky-900 py-24">
         <div class="absolute inset-0 opacity-10">
             <svg class="h-full w-full" viewBox="0 0 1440 500" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="300" cy="200" r="180" fill="currentColor" class="text-white" />
@@ -17,6 +17,10 @@ new #[Title('Tentang Kami - Kolam Po\'opo')] #[Layout('layouts.guest')] class ex
                 <circle cx="700" cy="400" r="200" fill="currentColor" class="text-white" />
             </svg>
         </div>
+        <!-- Animated floating orbs -->
+        <div class="animate-float-gentle absolute -top-10 left-1/4 size-40 rounded-full bg-white/10 blur-2xl"></div>
+        <div class="animate-float-slow absolute -bottom-10 right-1/3 size-52 rounded-full bg-sky-400/10 blur-2xl"></div>
+        <div class="animate-float-reverse absolute right-10 top-10 size-24 rounded-full bg-sky-300/10 blur-xl"></div>
         <div class="relative mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
             <span class="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-sm font-medium text-sky-100 backdrop-blur-sm">
                 <flux:icon name="information-circle" variant="mini" class="size-4" />
@@ -35,8 +39,9 @@ new #[Title('Tentang Kami - Kolam Po\'opo')] #[Layout('layouts.guest')] class ex
     </section>
 
     <!-- Sejarah -->
-    <section class="bg-white py-16 dark:bg-zinc-800 sm:py-24">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <section class="relative bg-white py-16 dark:bg-zinc-800 sm:py-24">
+        <div class="bg-dot-pattern pointer-events-none absolute inset-0 opacity-40"></div>
+        <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="grid items-center gap-12 lg:grid-cols-2">
                 <div>
                     <span class="text-sm font-semibold uppercase tracking-wider text-sky-600 dark:text-sky-400">Sejarah Kami</span>
@@ -54,19 +59,19 @@ new #[Title('Tentang Kami - Kolam Po\'opo')] #[Layout('layouts.guest')] class ex
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
-                    <div class="rounded-2xl bg-gradient-to-br from-sky-100 to-sky-200 p-8 text-center dark:from-sky-900/40 dark:to-sky-800/30">
+                    <div class="rounded-2xl bg-linear-to-br from-sky-100 to-sky-200 p-8 text-center dark:from-sky-900/40 dark:to-sky-800/30">
                         <p class="text-4xl font-bold text-sky-700 dark:text-sky-400">100%</p>
                         <p class="mt-1 text-sm font-medium text-sky-600 dark:text-sky-400/80">Air Panas Alami</p>
                     </div>
-                    <div class="rounded-2xl bg-gradient-to-br from-green-100 to-green-200 p-8 text-center dark:from-green-900/40 dark:to-green-800/30">
+                    <div class="rounded-2xl bg-linear-to-br from-green-100 to-green-200 p-8 text-center dark:from-green-900/40 dark:to-green-800/30">
                         <p class="text-4xl font-bold text-green-700 dark:text-green-400">7</p>
                         <p class="mt-1 text-sm font-medium text-green-600 dark:text-green-400/80">Hari Beroperasi</p>
                     </div>
-                    <div class="rounded-2xl bg-gradient-to-br from-amber-100 to-amber-200 p-8 text-center dark:from-amber-900/40 dark:to-amber-800/30">
+                    <div class="rounded-2xl bg-linear-to-br from-amber-100 to-amber-200 p-8 text-center dark:from-amber-900/40 dark:to-amber-800/30">
                         <p class="text-4xl font-bold text-amber-700 dark:text-amber-400">24/7</p>
                         <p class="mt-1 text-sm font-medium text-amber-600 dark:text-amber-400/80">Keamanan</p>
                     </div>
-                    <div class="rounded-2xl bg-gradient-to-br from-violet-100 to-violet-200 p-8 text-center dark:from-violet-900/40 dark:to-violet-800/30">
+                    <div class="rounded-2xl bg-linear-to-br from-violet-100 to-violet-200 p-8 text-center dark:from-violet-900/40 dark:to-violet-800/30">
                         <p class="text-4xl font-bold text-violet-700 dark:text-violet-400">5+</p>
                         <p class="mt-1 text-sm font-medium text-violet-600 dark:text-violet-400/80">Fasilitas</p>
                     </div>
@@ -79,7 +84,7 @@ new #[Title('Tentang Kami - Kolam Po\'opo')] #[Layout('layouts.guest')] class ex
     <section class="bg-zinc-50 py-16 dark:bg-zinc-900 sm:py-24">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="grid gap-8 lg:grid-cols-2">
-                <div class="rounded-2xl border border-sky-200 bg-gradient-to-br from-sky-50 to-white p-8 dark:border-sky-900/50 dark:from-sky-900/20 dark:to-zinc-800 lg:p-10">
+                <div class="rounded-2xl border border-sky-200 bg-linear-to-br from-sky-50 to-white p-8 dark:border-sky-900/50 dark:from-sky-900/20 dark:to-zinc-800 lg:p-10">
                     <div class="mb-4 flex size-14 items-center justify-center rounded-xl bg-sky-100 dark:bg-sky-900/30">
                         <flux:icon name="eye" class="size-7 text-sky-600 dark:text-sky-400" />
                     </div>
@@ -89,7 +94,7 @@ new #[Title('Tentang Kami - Kolam Po\'opo')] #[Layout('layouts.guest')] class ex
                         kenyamanan, keamanan, dan kelestarian lingkungan.
                     </p>
                 </div>
-                <div class="rounded-2xl border border-green-200 bg-gradient-to-br from-green-50 to-white p-8 dark:border-green-900/50 dark:from-green-900/20 dark:to-zinc-800 lg:p-10">
+                <div class="rounded-2xl border border-green-200 bg-linear-to-br from-green-50 to-white p-8 dark:border-green-900/50 dark:from-green-900/20 dark:to-zinc-800 lg:p-10">
                     <div class="mb-4 flex size-14 items-center justify-center rounded-xl bg-green-100 dark:bg-green-900/30">
                         <flux:icon name="rocket-launch" class="size-7 text-green-600 dark:text-green-400" />
                     </div>
@@ -122,8 +127,9 @@ new #[Title('Tentang Kami - Kolam Po\'opo')] #[Layout('layouts.guest')] class ex
     </section>
 
     <!-- Fasilitas -->
-    <section class="bg-white py-16 dark:bg-zinc-800 sm:py-24">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <section class="relative bg-white py-16 dark:bg-zinc-800 sm:py-24">
+        <div class="bg-dot-pattern pointer-events-none absolute inset-0 opacity-40"></div>
+        <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="text-center">
                 <span class="text-sm font-semibold uppercase tracking-wider text-sky-600 dark:text-sky-400">Fasilitas</span>
                 <h2 class="mt-2 text-3xl font-bold text-zinc-900 dark:text-white sm:text-4xl">Fasilitas Lengkap untuk Kenyamanan Anda</h2>
@@ -173,29 +179,11 @@ new #[Title('Tentang Kami - Kolam Po\'opo')] #[Layout('layouts.guest')] class ex
                     <div class="flex items-center justify-between rounded-lg bg-zinc-50 px-5 py-4 dark:bg-zinc-900">
                         <div class="flex items-center gap-3">
                             <div class="flex size-10 items-center justify-center rounded-lg bg-sky-100 dark:bg-sky-900/30">
-                                <flux:icon name="briefcase" variant="mini" class="size-5 text-sky-600 dark:text-sky-400" />
+                                <flux:icon name="clock" variant="mini" class="size-5 text-sky-600 dark:text-sky-400" />
                             </div>
-                            <span class="font-medium text-zinc-900 dark:text-white">Senin - Jumat</span>
+                            <span class="font-medium text-zinc-900 dark:text-white">Setiap Hari</span>
                         </div>
-                        <span class="font-semibold text-zinc-700 dark:text-zinc-300">08:00 - 18:00 WITA</span>
-                    </div>
-                    <div class="flex items-center justify-between rounded-lg bg-zinc-50 px-5 py-4 dark:bg-zinc-900">
-                        <div class="flex items-center gap-3">
-                            <div class="flex size-10 items-center justify-center rounded-lg bg-green-100 dark:bg-green-900/30">
-                                <flux:icon name="sun" variant="mini" class="size-5 text-green-600 dark:text-green-400" />
-                            </div>
-                            <span class="font-medium text-zinc-900 dark:text-white">Sabtu - Minggu</span>
-                        </div>
-                        <span class="font-semibold text-zinc-700 dark:text-zinc-300">07:00 - 19:00 WITA</span>
-                    </div>
-                    <div class="flex items-center justify-between rounded-lg bg-zinc-50 px-5 py-4 dark:bg-zinc-900">
-                        <div class="flex items-center gap-3">
-                            <div class="flex size-10 items-center justify-center rounded-lg bg-amber-100 dark:bg-amber-900/30">
-                                <flux:icon name="star" variant="mini" class="size-5 text-amber-600 dark:text-amber-400" />
-                            </div>
-                            <span class="font-medium text-zinc-900 dark:text-white">Hari Libur Nasional</span>
-                        </div>
-                        <span class="font-semibold text-zinc-700 dark:text-zinc-300">07:00 - 19:00 WITA</span>
+                        <span class="font-semibold text-zinc-700 dark:text-zinc-300">08:00 - 22:00 WITA</span>
                     </div>
                 </div>
             </div>
@@ -203,8 +191,10 @@ new #[Title('Tentang Kami - Kolam Po\'opo')] #[Layout('layouts.guest')] class ex
     </section>
 
     <!-- CTA -->
-    <section class="bg-gradient-to-r from-sky-600 to-sky-800 py-16 dark:from-sky-800 dark:to-sky-950">
-        <div class="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
+    <section class="relative overflow-hidden bg-linear-to-r from-sky-600 to-sky-800 py-16 dark:from-sky-800 dark:to-sky-950">
+        <div class="animate-float-gentle absolute -left-10 -top-10 size-40 rounded-full bg-white/5 blur-2xl"></div>
+        <div class="animate-float-slow absolute -bottom-10 -right-10 size-48 rounded-full bg-sky-300/10 blur-3xl"></div>
+        <div class="relative mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
             <h2 class="text-2xl font-bold text-white sm:text-3xl">Tertarik Berkunjung?</h2>
             <p class="mt-3 text-sky-100">Pesan tiket online sekarang dan nikmati kemudahan masuk tanpa antri.</p>
             <div class="mt-6">

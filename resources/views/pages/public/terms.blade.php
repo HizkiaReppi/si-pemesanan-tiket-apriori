@@ -9,7 +9,7 @@ new #[Title('Syarat & Ketentuan - Kolam Po\'opo')] #[Layout('layouts.guest')] cl
 
 <div>
     <!-- Hero -->
-    <section class="relative overflow-hidden bg-gradient-to-br from-sky-600 via-sky-700 to-sky-900 py-20">
+    <section class="relative overflow-hidden bg-linear-to-br from-sky-600 via-sky-700 to-sky-900 py-20">
         <div class="absolute inset-0 opacity-10">
             <svg class="h-full w-full" viewBox="0 0 1440 400" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="200" cy="150" r="180" fill="currentColor" class="text-white"/>
@@ -17,6 +17,10 @@ new #[Title('Syarat & Ketentuan - Kolam Po\'opo')] #[Layout('layouts.guest')] cl
                 <circle cx="1300" cy="80" r="140" fill="currentColor" class="text-white"/>
             </svg>
         </div>
+        <!-- Animated floating orbs -->
+        <div class="animate-float-gentle absolute -top-10 left-1/4 size-40 rounded-full bg-white/10 blur-2xl"></div>
+        <div class="animate-float-slow absolute -bottom-10 right-1/4 size-52 rounded-full bg-sky-400/10 blur-2xl"></div>
+        <div class="animate-float-delayed absolute right-10 top-10 size-24 rounded-full bg-sky-300/10 blur-xl"></div>
         <div class="relative mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
             <span class="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-sm font-medium text-sky-100 backdrop-blur-sm">
                 <flux:icon name="document-text" variant="mini" class="size-4" />
@@ -33,8 +37,9 @@ new #[Title('Syarat & Ketentuan - Kolam Po\'opo')] #[Layout('layouts.guest')] cl
     </section>
 
     <!-- Content -->
-    <section class="bg-zinc-50 py-16 dark:bg-zinc-900">
-        <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+    <section class="relative bg-zinc-50 py-16 dark:bg-zinc-900">
+        <div class="bg-dot-pattern pointer-events-none absolute inset-0 opacity-40"></div>
+        <div class="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
             <div class="space-y-6">
                 @php
                     $sections = [
@@ -77,7 +82,7 @@ new #[Title('Syarat & Ketentuan - Kolam Po\'opo')] #[Layout('layouts.guest')] cl
                 @endforeach
 
                 {{-- Contact Section --}}
-                <div class="rounded-2xl border border-sky-200 bg-gradient-to-r from-sky-50 to-sky-100 p-6 dark:border-sky-900/50 dark:from-sky-900/20 dark:to-sky-800/10 sm:p-8">
+                <div class="rounded-2xl border border-sky-200 bg-linear-to-r from-sky-50 to-sky-100 p-6 dark:border-sky-900/50 dark:from-sky-900/20 dark:to-sky-800/10 sm:p-8">
                     <div class="flex items-start gap-4">
                         <div class="flex size-12 shrink-0 items-center justify-center rounded-xl bg-sky-200 dark:bg-sky-900/50">
                             <flux:icon name="envelope" class="size-6 text-sky-700 dark:text-sky-400" />

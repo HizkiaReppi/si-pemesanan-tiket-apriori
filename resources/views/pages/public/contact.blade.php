@@ -54,16 +54,33 @@ new #[Title('Hubungi Kami - Kolam Po\'opo')] #[Layout('layouts.guest')] class ex
 
 <div>
     <!-- Hero -->
-    <section class="bg-gradient-to-br from-sky-600 via-sky-700 to-sky-900 py-16">
-        <div class="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
-            <h1 class="text-3xl font-bold text-white sm:text-4xl">Hubungi Kami</h1>
+    <section class="relative overflow-hidden bg-linear-to-br from-sky-600 via-sky-700 to-sky-900 py-16">
+        <!-- Animated floating orbs -->
+        <div class="animate-float-gentle absolute -top-10 left-1/4 size-40 rounded-full bg-white/10 blur-2xl"></div>
+        <div class="animate-float-slow absolute -bottom-10 right-1/3 size-52 rounded-full bg-sky-400/10 blur-2xl"></div>
+        <div class="animate-float-reverse absolute left-10 top-16 size-24 rounded-full bg-sky-300/10 blur-xl"></div>
+
+        <div class="relative mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
+            <span class="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-sky-100 backdrop-blur-sm">
+                <flux:icon name="envelope" variant="mini" class="size-4" />
+                Hubungi Kami
+            </span>
+            <h1 class="mt-4 text-3xl font-bold text-white sm:text-4xl">Hubungi Kami</h1>
             <p class="mt-3 text-sky-100">Ada pertanyaan atau saran? Jangan ragu untuk menghubungi kami.</p>
+        </div>
+
+        <!-- Wave divider -->
+        <div class="absolute -bottom-1 left-0 w-full">
+            <svg viewBox="0 0 1440 100" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full">
+                <path d="M0,40 C360,100 1080,0 1440,60 L1440,100 L0,100Z" class="fill-white dark:fill-zinc-800" />
+            </svg>
         </div>
     </section>
 
     <!-- Content -->
-    <section class="bg-white py-16 dark:bg-zinc-800">
-        <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+    <section class="relative bg-white py-16 dark:bg-zinc-800">
+        <div class="bg-dot-pattern pointer-events-none absolute inset-0 opacity-40"></div>
+        <div class="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
             <div class="grid gap-12 lg:grid-cols-2">
                 <!-- Contact Info -->
                 <div>
@@ -74,8 +91,8 @@ new #[Title('Hubungi Kami - Kolam Po\'opo')] #[Layout('layouts.guest')] class ex
                     </p>
 
                     <div class="mt-8 space-y-6">
-                        <div class="flex items-start gap-4">
-                            <div class="flex size-12 shrink-0 items-center justify-center rounded-xl bg-sky-100 dark:bg-sky-900/30">
+                        <div class="flex items-start gap-4 transition-all duration-300 hover:translate-x-1">
+                            <div class="flex size-12 shrink-0 items-center justify-center rounded-xl bg-sky-100 shadow-sm dark:bg-sky-900/30">
                                 <flux:icon name="map-pin" class="size-6 text-sky-600 dark:text-sky-400" />
                             </div>
                             <div>
@@ -87,21 +104,21 @@ new #[Title('Hubungi Kami - Kolam Po\'opo')] #[Layout('layouts.guest')] class ex
                             </div>
                         </div>
 
-                        <div class="flex items-start gap-4">
-                            <div class="flex size-12 shrink-0 items-center justify-center rounded-xl bg-green-100 dark:bg-green-900/30">
+                        <div class="flex items-start gap-4 transition-all duration-300 hover:translate-x-1">
+                            <div class="flex size-12 shrink-0 items-center justify-center rounded-xl bg-green-100 shadow-sm dark:bg-green-900/30">
                                 <flux:icon name="phone" class="size-6 text-green-600 dark:text-green-400" />
                             </div>
                             <div>
                                 <h3 class="font-semibold text-zinc-900 dark:text-white">Telepon</h3>
                                 <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
                                     +62 812-3456-7890<br>
-                                    Senin - Minggu, 08:00 - 18:00 WITA
+                                    Setiap Hari, 08:00 - 22:00 WITA
                                 </p>
                             </div>
                         </div>
 
-                        <div class="flex items-start gap-4">
-                            <div class="flex size-12 shrink-0 items-center justify-center rounded-xl bg-amber-100 dark:bg-amber-900/30">
+                        <div class="flex items-start gap-4 transition-all duration-300 hover:translate-x-1">
+                            <div class="flex size-12 shrink-0 items-center justify-center rounded-xl bg-amber-100 shadow-sm dark:bg-amber-900/30">
                                 <flux:icon name="envelope" class="size-6 text-amber-600 dark:text-amber-400" />
                             </div>
                             <div>
@@ -113,15 +130,14 @@ new #[Title('Hubungi Kami - Kolam Po\'opo')] #[Layout('layouts.guest')] class ex
                             </div>
                         </div>
 
-                        <div class="flex items-start gap-4">
-                            <div class="flex size-12 shrink-0 items-center justify-center rounded-xl bg-violet-100 dark:bg-violet-900/30">
+                        <div class="flex items-start gap-4 transition-all duration-300 hover:translate-x-1">
+                            <div class="flex size-12 shrink-0 items-center justify-center rounded-xl bg-violet-100 shadow-sm dark:bg-violet-900/30">
                                 <flux:icon name="clock" class="size-6 text-violet-600 dark:text-violet-400" />
                             </div>
                             <div>
                                 <h3 class="font-semibold text-zinc-900 dark:text-white">Jam Operasional</h3>
                                 <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-                                    Senin - Jumat: 08:00 - 18:00 WITA<br>
-                                    Sabtu - Minggu: 07:00 - 19:00 WITA
+                                    Setiap Hari: 08:00 - 22:00 WITA
                                 </p>
                             </div>
                         </div>
@@ -144,7 +160,7 @@ new #[Title('Hubungi Kami - Kolam Po\'opo')] #[Layout('layouts.guest')] class ex
                             </flux:button>
                         </div>
                     @else
-                        <div class="rounded-2xl border border-zinc-200 bg-white p-8 dark:border-zinc-700 dark:bg-zinc-900">
+                        <div class="rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm transition-all duration-300 hover:shadow-md dark:border-zinc-700 dark:bg-zinc-900">
                             <h2 class="mb-6 text-xl font-bold text-zinc-900 dark:text-white">Kirim Pesan</h2>
 
                             <form wire:submit="send" class="space-y-5">

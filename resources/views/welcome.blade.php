@@ -8,9 +8,9 @@
     $ticketTypes = TicketType::active()->ordered()->with('prices')->get();
 @endphp
 
-<x-layouts.guest>
+<x-layouts::guest>
     <!-- Hero Section -->
-    <section class="relative overflow-hidden bg-gradient-to-br from-sky-600 via-sky-700 to-sky-900 dark:from-sky-800 dark:via-sky-900 dark:to-zinc-900">
+    <section class="relative overflow-hidden bg-linear-to-br from-sky-600 via-sky-700 to-sky-900 dark:from-sky-800 dark:via-sky-900 dark:to-zinc-900">
         <div class="absolute inset-0 opacity-10">
             <svg class="h-full w-full" viewBox="0 0 1440 600" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="200" cy="300" r="200" fill="currentColor" class="text-white"/>
@@ -210,4 +210,4 @@
             </div>
         </div>
     </section>
-</x-layouts.guest>
+</x-layouts::guest>
