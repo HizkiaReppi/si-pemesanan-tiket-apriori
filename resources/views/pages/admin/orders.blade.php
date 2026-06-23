@@ -56,13 +56,13 @@ new #[Title('Kelola Pesanan')] #[Layout('layouts.app')] class extends Component 
         <!-- Filters -->
         <div class="flex flex-wrap gap-3">
             <flux:input wire:model.live.debounce.300ms="search" placeholder="Cari kode/nama/email..." icon="magnifying-glass" class="max-w-xs" />
-            <flux:select wire:model.live="status" class="max-w-[200px]">
+            <flux:select wire:model.live="status" class="max-w-50">
                 <flux:select.option value="">Semua Status</flux:select.option>
                 @foreach(\App\Enums\OrderStatus::cases() as $s)
                     <flux:select.option value="{{ $s->value }}">{{ $s->label() }}</flux:select.option>
                 @endforeach
             </flux:select>
-            <flux:input wire:model.live="dateFilter" type="date" class="max-w-[200px]" />
+            <flux:input wire:model.live="dateFilter" type="date" class="max-w-50" />
         </div>
 
         <!-- Table -->
